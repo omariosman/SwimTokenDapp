@@ -1,0 +1,304 @@
+footer {
+  background-image: url(../assets/img/gradiant-bg.webp);
+  background-size: cover;
+  background-position: center center;
+  height: 100%;
+  width: 100%;
+}
+
+.social-icon ul {
+  list-style: none;
+  padding-left: 0px;
+}
+
+h6 {
+  font-size: .925rem;
+  margin-bottom: 0.2rem;
+}
+
+.pull-right {
+  float: right;
+}
+
+.social-icon ul li {
+  display: inline;
+  margin: 6px;
+  /* line-height: 4; */
+  border-radius: 6px;
+  padding: 8px 0px 6px 0px;
+  height: 26px;
+  background: #ECECEE;
+}
+
+a {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+.social-icon ul li img {
+  padding: 0px 10px;
+  width: 35px;
+  vertical-align: unset;
+  /* height: 33px; */
+  border-radius: 5px;
+}
+
+#newsletterEmail {
+  border: 1px solid #686666;
+  background: transparent;
+  color: #fff;
+  font-size: 18px;
+  padding: 0px 10px;
+  width: 100%;
+  height: 35px;
+  border-radius: 4px;
+}
+
+.btn-submit {
+  background-color: #ab5fff;
+  background: linear-gradient(80deg, #c64eff, #00cdff);
+  height: 35px;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 4px;
+  padding: 0px 12px;
+}
+
+.Copyright {
+  font-size: 18px;
+  margin-top: 30px;
+}
+
+footer h2 {
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.footer-box ul {
+  list-style: none;
+  padding-left: 0px;
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+.footer-box ul li {
+  line-height: 1.5rem;
+}
+
+.tokenomics {
+  background-size: cover;
+  /* background-image: url(../images/golden-glob.png); */
+  min-height: 630px;
+  padding: 80px 0px 170px 0px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #000;
+}
+
+.tokenomics h1 {
+  background: #fff;
+  width: 257px;
+  font-weight: 500;
+  font-size: 2em;
+  padding: 8px;
+  color: #000;
+  text-transform: uppercase;
+  border-radius: 12px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-img {
+  background: linear-gradient(241deg, rgba(246, 182, 12, 1) 0%, rgba(191, 114, 6, 1) 52%, rgba(245, 178, 8, 1) 100%);
+  padding: 10px 10px;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.bg-color_head {
+  background: linear-gradient(45deg, #000000a1, #1d81bf85);
+  border-radius: 7px;
+  padding: 20px 0px;
+}
+
+.bg-color {
+  background: linear-gradient(270deg, #20b8ffa3, #bb55fff2);
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.table-striped>tbody>tr>td {
+  color: #fff !important;
+}
+
+.ParallaxVideo {
+  /* height: 300px; */
+  padding-bottom: 50px;
+  padding-top: 50px;
+}
+
+.ParallaxVideo video {
+  min-width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: -999;
+  height: 99%;
+  object-fit: cover;
+}
+
+.ParallaxVideo h1 {
+  color: #fff;
+  font-size: 76px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.sale-box-black {
+  background: rgba(65, 13, 80, 0.92);
+  padding: 10px;
+  border-radius: 20px;
+  position: relative;
+  border: 1px solid #fff;
+  height: 200px;
+  text-align: center;
+  margin: 20px;
+  box-shadow: 0 15px 0 #fff, inset 0 -15px 0 hsl(0deg 0% 100% / 24%), 0 45px 0 rgb(0 0 0 / 15%);
+}
+
+.card-box {
+  align-items: flex-start;
+  background: rgba(65, 13, 80, 0.92);
+  border: 1px solid #73737a;
+  border-radius: 20px;
+  border-bottom-left-radius: 160px;
+  border-bottom-right-radius: 160px;
+  box-shadow: 0 15px 0 #fff, inset 0 -15px 0 hsl(0deg 0% 100% / 24%), 0 45px 0 rgb(0 0 0 / 15%);
+  display: flex;
+  height: 250px;
+  justify-content: center;
+  margin: 30px;
+  overflow: hidden;
+  position: relative;
+  width: 320px;
+}
+
+.sale-box-black h2 {
+  border-bottom: 1px solid #515151 !important;
+  padding: 8px 0px;
+  font-weight: 500;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.sale-box-black p {
+  margin-top: 1px;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.sale-box-black .btn {
+  padding: 9px 20px;
+  width: 175px;
+  position: relative;
+  margin-top: 16px;
+  font-weight: 600;
+  border-radius: 30px;
+  font-size: 12px;
+  background: #230a29 !important;
+  color: #fff;
+}
+
+/* * {
+    box-sizing: border-box;
+  } */
+
+/* Create two equal columns that floats next to each other */
+.twoColumn {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  margin-top: 40px;
+  /* height: 300px;  */
+  /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.rowTwoCol:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .twoColumn {
+    width: 100%;
+  }
+}
+
+.expired-notice {
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid #ebebeb;
+  border-radius: 0.25rem;
+  margin: 0.5rem;
+}
+
+.expired-notice>span {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: red;
+}
+
+.expired-notice>p {
+  font-size: 1.5rem;
+}
+
+.show-counter {
+  padding: 0.5rem;
+}
+
+.show-counter .countdown-link {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  padding: 0.5rem;
+  border: 1px solid #ebebeb;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  color: #000;
+}
+
+.show-counter .countdown {
+  line-height: 1.25rem;
+  padding: 0 0.75rem 0 0.75rem;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.show-counter .countdown.danger {
+  color: #ff0000;
+}
+
+.show-counter .countdown>p {
+  margin: 0;
+}
+
+.show-counter .countdown>span {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.NumericFormat{
+  background: none;
+  color: #fff;
+  min-width: 30%;
+  max-width: 45%;
+}

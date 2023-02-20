@@ -1,0 +1,27 @@
+{
+    "heading": "What does the SWIM  token do for you?",
+    "content": "If you pay with our token, you will receive up to a 60% discount on the following services:",
+    "contentData": [
+        {
+            "id": "1",
+            "iconclass": "fa fa-crosshairs fa-3x",
+            "iconcolor":"#2eaae5",
+            "heading": "Your data transfer, your design, your URL",
+            "content": "Use your company's corporate identity for data transfer with SWIM. Define your own URL and turn your website into another marketing channel"
+        },
+        {
+            "id": "2",
+            "iconclass": "fa fa-route fa-3x",
+            "iconcolor":"#00aaFF",
+            "heading": "Wallpaper advertising",
+            "content": "Use our Ad Manager to place wallpaper ads (2560x1440px) in your country or  region and reach hundreds of thousands  of SWIM users with your business"
+        },
+        {
+            "id": "3",
+            "iconclass": "fa fa-eye fa-3x",
+            "iconcolor":"#b50587",
+            "heading": "Premium Services",
+            "content": "As a Business or Premium user,  you enjoy valuable security features.  They guarantee the authenticity and integrity  of sensitive company data. With the new SWIM 3.0, you get unlimited file transfer  and storage capabilities. Still,  you can also time-stamp your  data via publicly verifiable proof  and share it with your customers  or co-workers via the,  decentralized network you define."
+        }
+    ]
+}
