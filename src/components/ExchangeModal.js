@@ -183,7 +183,7 @@ const ExchangeModal = (props) => {
       var supply_amount = parseFloat(useramount);
 
       const amountToApprove = supply_amount * 10 ** 6;
-      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
+      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
 
       //call CliffVesting BuyTokenWithUSDT function
 
