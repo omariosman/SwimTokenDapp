@@ -4,7 +4,7 @@ export let provider = new WalletConnectProvider({
   rpc: {
     1: "https://mainnet.infura.io/v3/9255e09afae94ffa9ea052ce163b8c90",
   },
-  qrcode: true,
+  qrcode: false,
   qrcodeModalOptions: {
     mobileLinks: ["rainbow", "metamask", "argent", "trust"],
   },

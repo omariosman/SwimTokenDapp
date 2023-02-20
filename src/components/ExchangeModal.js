@@ -47,6 +47,7 @@ const ExchangeModal = (props) => {
 
   const handleCurrencyChange = (event) => {
     setSelectedCurrency(event.target.value);
+    maxToken();
   };
   
   const handleBuyNowClick = () => {
@@ -56,12 +57,12 @@ const ExchangeModal = (props) => {
     usdtApproval();
   }
   };
-/*
+
   useEffect(() => {
     if(selectedCurrency === `eth`) {
       setuseramount(ethbalance);
       let ethTokenToPrice = 58405;
-      let tokenToeth = parseFloat(useramount).toFixed(6);
+      let tokenToeth = parseFloat(ethbalance).toFixed(6);
       let bnbPrice = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
   
       if (bnbPrice > 0) {
@@ -70,7 +71,7 @@ const ExchangeModal = (props) => {
     } else if (selectedCurrency === `usdt`) {
       setuseramount(metamaskbalance);
       let usdTokenToPrice = 37;
-      let tokenTousd = parseFloat(useramount).toFixed(6);
+      let tokenTousd = parseFloat(metamaskbalance).toFixed(6);
       let bnbPrice = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
   
       if (bnbPrice > 0) {
@@ -78,7 +79,7 @@ const ExchangeModal = (props) => {
       }
     }
   }, [selectedCurrency]);
-*/
+
   useEffect(() => {
       setGetWeb3(web3Auth);
       getMetamaskBalance(web3Auth);
@@ -159,44 +160,55 @@ const ExchangeModal = (props) => {
       //const web3Modal = new Web3Modal();
       //const web3 = new Web3(web3Modal.provider);
       try{
-      var web3 = web3Auth;
-      // Step 2: Get the user's public address
-      const accounts = await web3.eth.getAccounts();
-      const userAddress = accounts[0];
+        var web3 = web3Auth;
+        var currentNetwork = await web3.eth.getChainId();
+        if (currentNetwork != "0x1" && currentNetwork != "1") {
+          toast.error("Please Select ETH Network!!");
+          return;
+        }
   
-      // Step 3: Create a new contract instance
-      const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
-      var supply_amount = parseFloat(useramount);
-      // Step 4: Call the `approve()` function
-      //this functions needs to be changed since usdt token only has 6 decimal places not 18
-      //const amountToApprove = web3.utils.toWei(supply_amount, 'ether'); // example amount
-      const amountToApprove = supply_amount * 10 ** 6;
-      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
+        var accounts = await web3.eth.getAccounts();
 
-      //call CliffVesting BuyTokenWithUSDT function
-      const contract = new web3.eth.Contract(
+      const userAddress = accounts[0];
+      if (!provider.connected) {
+        provider.enable();
+      }
+      let newProvider = new Web3(provider);
+
+      const contract = new newProvider.eth.Contract(
         config.PRE_SALE_ABI,
         config.PRE_SALE_ADDRESS
       );
+      const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
+      var supply_amount = parseFloat(useramount);
+
+      const amountToApprove = supply_amount * 10 ** 6;
+      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
+
+      //call CliffVesting BuyTokenWithUSDT function
+
       var tx_builder = "";
       
       //supply_amount = (supply_amount * 10 ** 18);
-      supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
+      //supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
+      supply_amount = (supply_amount * 10 ** 6);
 
       tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
+      //encodeABI fails
+      web3.eth.defaultAccount = userAddress;
+      //web3.eth.personal.unlockAccount(web3.eth.defaultAccount);
       let encoded_tx = tx_builder.encodeABI();
+    
       let gasPrice = await web3.eth.getGasPrice();
+
       const tx = {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS,
         gasPrice: gasPrice,
         data: encoded_tx,
       }
-      //debugger;
       const gas = await web3.eth.estimateGas(tx);
-      //debugger;
       tx.gas = gas;
-
       const receipt = await web3.eth.sendTransaction(tx);
       if (receipt) {
         contract.events.newVesting({}, (error, event) => {
