@@ -184,7 +184,7 @@ const ExchangeModal = (props) => {
       var supply_amount = parseFloat(useramount);
 
       const amountToApprove = supply_amount * 10 ** 6;
-      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
+      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
 
       //call CliffVesting BuyTokenWithUSDT function
       supply_amount = (supply_amount * 10 ** 6);
@@ -623,7 +623,7 @@ const ExchangeModal = (props) => {
               <input type="text" value={bnbprice} placeholder="0" />
             </div>
           </div>
-          <p style={{ fontSize: "10px" }}> 3M Cliff, 12M Vesting.</p>
+          <p style={{ fontSize: "10px" }}> 2M Cliff, 12M Vesting.</p>
         </div>
       </Modal.Body>
       <Modal.Footer>
