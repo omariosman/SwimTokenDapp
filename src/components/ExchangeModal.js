@@ -13,6 +13,7 @@ import { provider } from "./helper";
 import { useAuth } from '../contexts/AuthContext2';
 import { fa1 } from "@fortawesome/free-solid-svg-icons";
 import { makeStyles } from '@material-ui/core/styles';
+const flatted = require('flatted');
 
 
 const useStyles = makeStyles({
@@ -167,7 +168,7 @@ const ExchangeModal = (props) => {
           return;
         }
   
-        var accounts = await web3.eth.getAccounts();
+      var accounts = await web3.eth.getAccounts();
 
       const userAddress = accounts[0];
       if (!provider.connected) {
@@ -183,20 +184,14 @@ const ExchangeModal = (props) => {
       var supply_amount = parseFloat(useramount);
 
       const amountToApprove = supply_amount * 10 ** 6;
-      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
+      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
 
       //call CliffVesting BuyTokenWithUSDT function
-
-      var tx_builder = "";
-      
-      //supply_amount = (supply_amount * 10 ** 18);
-      //supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
       supply_amount = (supply_amount * 10 ** 6);
+      
+      //var tx_builder = "";
+      let tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
 
-      tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
-      //encodeABI fails
-      web3.eth.defaultAccount = userAddress;
-      //web3.eth.personal.unlockAccount(web3.eth.defaultAccount);
       let encoded_tx = tx_builder.encodeABI();
     
       let gasPrice = await web3.eth.getGasPrice();
@@ -205,6 +200,7 @@ const ExchangeModal = (props) => {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS,
         gasPrice: gasPrice,
+        gasEstimate: gas,
         data: encoded_tx,
       }
       const gas = await web3.eth.estimateGas(tx);
