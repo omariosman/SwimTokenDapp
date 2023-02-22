@@ -17,6 +17,18 @@ const flatted = require('flatted');
 
 
 const useStyles = makeStyles({
+  message: {
+    color: 'white',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    margin: '0',
+    padding: '1rem',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '1rem',
+    boxShadow: '0 0.5rem 1rem rgba(0, 0, 0, 0.5)',
+    marginBottom: '1rem'
+  },
   adjustSelectMenu: {
     display: 'flex',
     alignItems: 'center',
@@ -176,35 +188,46 @@ const ExchangeModal = (props) => {
       }
       let newProvider = new Web3(provider);
 
+
+      const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
+      var supply_amount = parseFloat(useramount);
+      if (isNaN(supply_amount)) {
+        alert('Invalid Amount value');
+        //throw new Error('Invalid useramount value');
+      }
+      const amountToApprove = supply_amount * 10 ** 6;
+      //tweak this parameter to change the gas price
+      //const gasPriceGwei = '0.3'; // Set the gas price to 20 Gwei (can be adjusted)
+
+      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ 
+        //from: userAddress,
+        //gasPrice: web3.utils.toWei(gasPriceGwei, 'Gwei')
+     // });
+
       const contract = new newProvider.eth.Contract(
         config.PRE_SALE_ABI,
         config.PRE_SALE_ADDRESS
       );
-      const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
-      var supply_amount = parseFloat(useramount);
-
-      const amountToApprove = supply_amount * 10 ** 6;
-      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ from: userAddress });
-
       //call CliffVesting BuyTokenWithUSDT function
       supply_amount = (supply_amount * 10 ** 6);
       
-      //var tx_builder = "";
-      let tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
-
+      var tx_builder = "";
+      tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
       let encoded_tx = tx_builder.encodeABI();
-    
       let gasPrice = await web3.eth.getGasPrice();
 
       const tx = {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS,
         gasPrice: gasPrice,
-        gasEstimate: gas,
         data: encoded_tx,
+        value: supply_amount.toString()
       }
+
       const gas = await web3.eth.estimateGas(tx);
+
       tx.gas = gas;
+      
       const receipt = await web3.eth.sendTransaction(tx);
       if (receipt) {
         contract.events.newVesting({}, (error, event) => {
@@ -212,7 +235,7 @@ const ExchangeModal = (props) => {
         });
         
         console.log("Transaction", receipt);
-        // await metamaskConfirm(txData.transactionHash);
+        //await metamaskConfirm(txData.transactionHash);
       } else {
         console.log("Transaction123", receipt);
 
@@ -260,7 +283,6 @@ const ExchangeModal = (props) => {
         provider.enable();
       }
       let newProvider = new Web3(provider);
-
       const contract = new newProvider.eth.Contract(
         config.PRE_SALE_ABI,
         config.PRE_SALE_ADDRESS
@@ -272,9 +294,7 @@ const ExchangeModal = (props) => {
 
       tx_builder = await contract.methods.buyTokensWithEth(from_address);
       let encoded_tx = tx_builder.encodeABI();
-      console.log("getBalace", encoded_tx);
       let gasPrice = await web3.eth.getGasPrice();
-      console.log("gasprice", gasPrice);
       const tx = {
         from: from_address,
         to: config.PRE_SALE_ADDRESS,
@@ -282,13 +302,10 @@ const ExchangeModal = (props) => {
         data: encoded_tx,
         value: supply_amount
       }
-      //debugger;
       const gas = await web3.eth.estimateGas(tx);
-      //debugger;
       tx.gas = gas;
 
       const receipt = await web3.eth.sendTransaction(tx);
-      //debugger;
       if (receipt) {
 
         console.log("Transaction", receipt);
@@ -557,11 +574,11 @@ const ExchangeModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <div className="exchange-modal">
-          
+          <p className={classes.message}>Stay Tuned <br /> Buying Swim Tokens with USDT feature will be unlocked at 25th Feb.</p>
           <div className={classes.balanceHere}>
             <select value={selectedCurrency} onChange={handleCurrencyChange} className={classes.dropdown}>
               <option value="eth">ETH</option>
-              <option value="usdt">USDT</option>
+              <option disabled value="usdt">USDT</option>
             </select>
           </div>
           <div className={`balance-here d-flex align-items-center`} >
