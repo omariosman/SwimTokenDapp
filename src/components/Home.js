@@ -71,6 +71,10 @@ const Home = () => {
     }
   }, [isConnected]);
 
+  useEffect(() => {
+    setDialogBoxOpen(false);
+  }, [isLoggedIn]);
+
   // Function to update parent state
   function updateAddr(addr) {
     setAccountAddr(addr);

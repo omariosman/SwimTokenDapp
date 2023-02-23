@@ -17,6 +17,14 @@ const flatted = require('flatted');
 
 
 const useStyles = makeStyles({
+  balancesContainer: {
+    border: "2px solid #2d3436",
+    margin: "0.75rem",
+    padding: "0.75rem"
+  },
+  balanceHere: {
+    textAlign: 'center'
+  },
   message: {
     color: 'white',
     fontSize: '1rem',
@@ -40,7 +48,38 @@ const useStyles = makeStyles({
     border: '2px solid black',
     padding: '5px',
   },
+
+  exchangeModal: {
+    backgroundColor: '#0C0C24',
+  },
+  exchangeModalButton: {
+    backgroundColor: '#BF53C8',
+    color: 'white',
+  },
+  courierNew: {
+    fontFamily: "Courier New"
+  },
+  buyNowBtn: {
+    border: "1px solid #2d3436",
+    padding:"0.4rem",
+    color: "#dfe6e9",
+    backgroundColor: "#2d3436",
+    width: "100%",
+    fontWeight: "900"
+  },
+  maxBtn: {
+    border: "1px solid #2d3436",
+    padding:"0.3rem",
+    color: "#b2bec3",
+    backgroundColor: "#2d3436",
+    fontWeight: "900"
+  },
+  conditionParagraph: {
+    marginTop: "0.5rem",
+
+  }
 });
+
 
 const ExchangeModal = (props) => {
   const [metamaskbalance, setmetamaskbalance] = useState(0);
@@ -56,6 +95,8 @@ const ExchangeModal = (props) => {
   const [isprocessing, setisprocessing] = useState(false);
   const { web3Auth, setWeb3Auth} = useAuth();
   const [selectedCurrency, setSelectedCurrency] = useState("eth");
+  const [isMsgShown, setIsMsgShown] = useState(false);
+
   const classes = useStyles();
 
   const handleCurrencyChange = (event) => {
@@ -102,9 +143,10 @@ const ExchangeModal = (props) => {
     var currentNetwork = await web3.eth.getChainId();
 
     if (currentNetwork != "1") {
-      toast.error("Please Select ETH Network!!");
+      toast.error("Please Select ETH mainnet!!");
       return;
     }
+
     const accounts = await web3.eth.getAccounts();
     var from_address = accounts[0];
 
@@ -126,7 +168,7 @@ const ExchangeModal = (props) => {
       (await contract1.methods.balanceOf(from_address).call()) / 10 ** 18;
 
     var getBalance1 = (await web3.eth.getBalance(from_address)) / 10 ** 18;
-    var currentBal1 = getBalance1;
+    var currentBal1 = getBalance1.toFixed(6);
 
     setmetamaskbalance(currentBal);
     setethbalance(currentBal1);
@@ -175,8 +217,9 @@ const ExchangeModal = (props) => {
       try{
         var web3 = web3Auth;
         var currentNetwork = await web3.eth.getChainId();
+        
         if (currentNetwork != "0x1" && currentNetwork != "1") {
-          toast.error("Please Select ETH Network!!");
+          toast.error("Please Select ETH mainnet!!");
           return;
         }
   
@@ -195,24 +238,31 @@ const ExchangeModal = (props) => {
         alert('Invalid Amount value');
         //throw new Error('Invalid useramount value');
       }
-      const amountToApprove = supply_amount * 10 ** 6;
       //tweak this parameter to change the gas price
-      //const gasPriceGwei = '0.3'; // Set the gas price to 20 Gwei (can be adjusted)
+      //const gasPriceGwei = '0.2'; // Set the gas price to 20 Gwei (can be adjusted)
+      /*
+      const contractGoerli = new newProvider.eth.Contract(
+        config.PRE_SALE_ABI,
+        config.PRE_SALE_ADDRESS
+      );
+      */
 
-      //const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ 
-        //from: userAddress,
+      const amountToApprove = supply_amount * 10 ** 6;
+      
+      const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ 
+        from: userAddress,
         //gasPrice: web3.utils.toWei(gasPriceGwei, 'Gwei')
-     // });
+     });
 
       const contract = new newProvider.eth.Contract(
         config.PRE_SALE_ABI,
         config.PRE_SALE_ADDRESS
       );
       //call CliffVesting BuyTokenWithUSDT function
-      supply_amount = (supply_amount * 10 ** 6);
+      //supply_amount = (supply_amount * 10 ** 6);
       
       var tx_builder = "";
-      tx_builder = await contract.methods.buyTokensWithUSDT(supply_amount);
+      tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
       let encoded_tx = tx_builder.encodeABI();
       let gasPrice = await web3.eth.getGasPrice();
 
@@ -220,20 +270,21 @@ const ExchangeModal = (props) => {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS,
         gasPrice: gasPrice,
-        data: encoded_tx,
-        value: supply_amount.toString()
+        data: encoded_tx
       }
 
       const gas = await web3.eth.estimateGas(tx);
 
       tx.gas = gas;
-      
       const receipt = await web3.eth.sendTransaction(tx);
+
       if (receipt) {
-        contract.events.newVesting({}, (error, event) => {
-          console.log(`Print event: ${event}`);
+        //toast.success();
+        contract.events.newVesting().on('data', (event) => {
+          console.log(`Print event: ${event.returnValues}`);
+          console.log(JSON.stringify(event.returnValues, null, 4));
+          // Do something with the emitted event
         });
-        
         console.log("Transaction", receipt);
         //await metamaskConfirm(txData.transactionHash);
       } else {
@@ -264,7 +315,7 @@ const ExchangeModal = (props) => {
       var web3 = web3Auth;
       var currentNetwork = await web3.eth.getChainId();
       if (currentNetwork != "0x1" && currentNetwork != "1") {
-        toast.error("Please Select ETH Network!!");
+        toast.error("Please Select ETH mainnet!!");
         return;
       }
 
@@ -292,7 +343,7 @@ const ExchangeModal = (props) => {
       //supply_amount = (supply_amount * 10 ** 18);
       supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
 
-      tx_builder = await contract.methods.buyTokensWithEth(from_address);
+      tx_builder = await contract.methods.buyTokensWithEth();
       let encoded_tx = tx_builder.encodeABI();
       let gasPrice = await web3.eth.getGasPrice();
       const tx = {
@@ -573,28 +624,29 @@ const ExchangeModal = (props) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="exchange-modal">
-          <p className={classes.message}>Stay Tuned <br /> Buying Swim Tokens with USDT feature will be unlocked at 25th Feb.</p>
+        <div className={`exchange-modal`}>
+          <p className={classes.message}>Buy with usdt after the 26th feb!</p>
           <div className={classes.balanceHere}>
+            <span><b>Choose a network: &nbsp;</b></span>
             <select value={selectedCurrency} onChange={handleCurrencyChange} className={classes.dropdown}>
               <option value="eth">ETH</option>
               <option disabled value="usdt">USDT</option>
             </select>
           </div>
+          <div className={classes.balancesContainer}>
           <div className={`balance-here d-flex align-items-center`} >
             <img alt="ETH" src="images/icons/ether.png" />
-            <p style={{ lineHeight: "3rem", fontSize: "16px", padding: "5px" }}>
+            <p style={{ lineHeight: "3rem", fontSize: "0.75rem", padding: "1px" }}>
               ETH BALANCE: {ethbalance}{" "}
             </p>
-            <hr />
+          
           </div>
           <div className="balance-here d-flex align-items-center">
             <img alt="USDT" src="images/icons/usdt.png" />
-            <p style={{ lineHeight: "3rem", fontSize: "16px", padding: "5px" }}>
+            <p style={{ lineHeight: "3rem", fontSize: "0.75rem", padding: "1px" }}>
               {" "}
               USDT BALANCE: {metamaskbalance}{" "}
             </p>
-            <hr />
           </div>
           <div className="balance-here d-flex align-items-center">
             <img
@@ -602,16 +654,17 @@ const ExchangeModal = (props) => {
               src="assets/img/logo.png"
               style={{ width: "25px" }}
             />
-            <p style={{ lineHeight: "3rem", fontSize: "16px", padding: "5px" }}>
+            <p style={{ lineHeight: "3rem", fontSize: "0.75rem", padding: "1px" }}>
               {" "}
               SWIM BALANCE: {swimbalance}{" "}
             </p>
             <hr />
           </div>
+          </div>
           <div className="forminput">
             <div className="step-box">
-              <h4>Pay</h4>
-              <h5>TOKEN</h5>
+              <h4 className={classes.courierNew}>Pay</h4>
+              <h5 className={classes.courierNew}>TOKEN</h5>
             </div>
             <div className="enter-input">
               <input
@@ -627,14 +680,15 @@ const ExchangeModal = (props) => {
                 name="useramount"
                 placeholder="0"
               />
-              <button onClick={maxToken} className="max-btn">
+              <button onClick={maxToken} className={`max-btn`}>
                 MAX
               </button>
             </div>
+            <p className={classes.conditionParagraph}><strong>Minimum Buy:</strong> 1000 Swim | $27</p>
           </div>
           <div className="forminput">
             <div className="step-box">
-              <h4>Receive SWIM</h4>
+              <h4 className={classes.courierNew}>Receive SWIM</h4>
             </div>
             <div className="enter-input">
               <input type="text" value={bnbprice} placeholder="0" />
@@ -650,10 +704,28 @@ const ExchangeModal = (props) => {
           </Button>
         )}
         {!isprocessing && (
-          <Button className="w-100" onClick={handleBuyNowClick}>
-            BUY NOW
-          </Button>
+            bnbprice < 1000
+            ? 
+            (
+              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClick} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
+              Buy Now
+            </button>
+
+            )
+            :
+            (
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
+              Buy Now
+            </button>
+            )
         )}
+        {
+          isMsgShown 
+          ?
+          <p className={classes.conditionParagraph}><strong>Minimum Buy:</strong> 1000 Swim | $27</p>
+          :
+          null
+        }
       </Modal.Footer>
     </Modal>
   );

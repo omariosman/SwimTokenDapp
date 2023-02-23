@@ -1,261 +1,1525 @@
 const config = {
     baseUrl: '/presale',
     // baseUrl: '/',
-    PRE_SALE_ADDRESS: '0x7b78a1b5e716891ae0a1d14c9d22f3a6c0a8b220',
+    TST_ADDRESS_GOERL: "0x07cce99266b0110297d1eb5f70f43b4e9da147ef",
+    TST_ABI_GOERLI: [
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "name_",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "symbol_",
+                    "type": "string"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "cap_",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Approval",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "from",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "to",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Transfer",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "_mint",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "owner",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                }
+            ],
+            "name": "allowance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "approve",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "account",
+                    "type": "address"
+                }
+            ],
+            "name": "balanceOf",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "cap",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [
+                {
+                    "internalType": "uint8",
+                    "name": "",
+                    "type": "uint8"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "subtractedValue",
+                    "type": "uint256"
+                }
+            ],
+            "name": "decreaseAllowance",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "spender",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "addedValue",
+                    "type": "uint256"
+                }
+            ],
+            "name": "increaseAllowance",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "name",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "symbol",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "to",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "transfer",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "from",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "to",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "transferFrom",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    PRE_SALE_ADDRESS_GOERL : "0x1732e0350731e984bedd1ad322a9a220c84acbc0",
+    PRE_SALE_ABI_GOERLI : [
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "token_",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_usdt",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address payable",
+                    "name": "_treasury",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "beneficiary",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint128",
+                    "name": "amount",
+                    "type": "uint128"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint128",
+                    "name": "releasedSoFar",
+                    "type": "uint128"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "remainingReleases",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Released",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "purchaser",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "TokenPurchase",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "_beneficiary",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "newVesting",
+            "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "beneficiary",
+                    "type": "address"
+                }
+            ],
+            "name": "buyTokensWithEth",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "_amount",
+                    "type": "uint128"
+                }
+            ],
+            "name": "buyTokensWithUSDT",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "conBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "conTokenBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "ethRaised",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getETHrate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_vestingsOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "getOwnerVestings",
+            "outputs": [
+                {
+                    "internalType": "bytes32[]",
+                    "name": "",
+                    "type": "bytes32[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getUSDTaddress",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getUSDTrate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestableAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getVestingSchedule",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "beneficiary",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "cliffMonths",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "vestingMonths",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "claimsLeft",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "claimsDone",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "start",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "amountTotal",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "released",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "lastClaimed",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "monthylAmount",
+                            "type": "uint128"
+                        }
+                    ],
+                    "internalType": "struct CliffVesting.VestingSchedule",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestingSchedulesCount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestingSchedulesTotalAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getWithdrawableAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "presaleCliff",
+            "outputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "",
+                    "type": "uint16"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "presaleVest",
+            "outputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "",
+                    "type": "uint16"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "release",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "sendBackToken",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "ETHPrice",
+                    "type": "uint128"
+                }
+            ],
+            "name": "setETHPrice",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "_presaleCliff",
+                    "type": "uint16"
+                }
+            ],
+            "name": "setPreSaleCliff",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "_presaleVest",
+                    "type": "uint16"
+                }
+            ],
+            "name": "setPreSaleVest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "trasuryAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "setTreasury",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "USDTPrice",
+                    "type": "uint128"
+                }
+            ],
+            "name": "setUSDTPrice",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "ViceOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "setViceOwner",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensPerEth",
+            "outputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "",
+                    "type": "uint128"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensPerUSDT",
+            "outputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "",
+                    "type": "uint128"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensSold",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "usdtRaised",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_beneficiary",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint16",
+                    "name": "_cliffMonths",
+                    "type": "uint16"
+                },
+                {
+                    "internalType": "uint16",
+                    "name": "_vestingDuration",
+                    "type": "uint16"
+                },
+                {
+                    "internalType": "uint128",
+                    "name": "_amount",
+                    "type": "uint128"
+                }
+            ],
+            "name": "vest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "viceOwner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    PRE_SALE_ADDRESS: '0x6628caC7Ad00fC39f934Bf10D09E1174006a3aE1',
     PRE_SALE_ABI: [
         {
-            inputs: [
-                {
-                    internalType: 'address',
-                    name: 'tokenAddress',
-                    type: 'address',
-                },
-                {
-                    internalType: 'address',
-                    name: '_pre1',
-                    type: 'address',
-                },
-            ],
-            stateMutability: 'nonpayable',
-            type: 'constructor',
+            "inputs": [],
+            "name": "buyTokensWithEth",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
         },
         {
-            anonymous: false,
-            inputs: [
+            "inputs": [
                 {
-                    indexed: true,
-                    internalType: 'address',
-                    name: 'purchaser',
-                    type: 'address',
-                },
-                {
-                    indexed: true,
-                    internalType: 'address',
-                    name: 'beneficiary',
-                    type: 'address',
-                },
-                {
-                    indexed: false,
-                    internalType: 'uint256',
-                    name: 'value',
-                    type: 'uint256',
-                },
-                {
-                    indexed: false,
-                    internalType: 'uint256',
-                    name: 'amount',
-                    type: 'uint256',
-                },
+                    "internalType": "uint128",
+                    "name": "_amount",
+                    "type": "uint128"
+                }
             ],
-            name: 'TokenPurchase',
-            type: 'event',
+            "name": "buyTokensWithUSDT",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
         },
         {
-            anonymous: false,
-            inputs: [
+            "inputs": [
                 {
-                    indexed: false,
-                    internalType: 'address',
-                    name: '_owner',
-                    type: 'address',
+                    "internalType": "address",
+                    "name": "token_",
+                    "type": "address"
                 },
                 {
-                    indexed: false,
-                    internalType: 'address',
-                    name: 'newOwner',
-                    type: 'address',
+                    "internalType": "address",
+                    "name": "_usdt",
+                    "type": "address"
                 },
+                {
+                    "internalType": "address payable",
+                    "name": "_treasury",
+                    "type": "address"
+                }
             ],
-            name: 'transferOwn',
-            type: 'event',
+            "stateMutability": "nonpayable",
+            "type": "constructor"
         },
         {
-            inputs: [],
-            name: 'USDTBalance',
-            outputs: [
+            "anonymous": false,
+            "inputs": [
                 {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "beneficiary",
+                    "type": "address"
                 },
+                {
+                    "indexed": true,
+                    "internalType": "uint128",
+                    "name": "amount",
+                    "type": "uint128"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint128",
+                    "name": "releasedSoFar",
+                    "type": "uint128"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "remainingReleases",
+                    "type": "uint256"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "Released",
+            "type": "event"
         },
         {
-            inputs: [
+            "anonymous": false,
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: 'beneficiary',
-                    type: 'address',
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "purchaser",
+                    "type": "address"
                 },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
             ],
-            name: 'buyTokensWithEth',
-            outputs: [],
-            stateMutability: 'payable',
-            type: 'function',
+            "name": "TokenPurchase",
+            "type": "event"
         },
         {
-            inputs: [
+            "anonymous": false,
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: 'beneficiary',
-                    type: 'address',
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "_beneficiary",
+                    "type": "address"
                 },
+                {
+                    "indexed": true,
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "uint256",
+                    "name": "_amount",
+                    "type": "uint256"
+                }
             ],
-            name: 'buyTokensWithUSDT',
-            outputs: [],
-            stateMutability: 'payable',
-            type: 'function',
+            "name": "newVesting",
+            "type": "event"
         },
         {
-            inputs: [],
-            name: 'conBalance',
-            outputs: [
+            "inputs": [
                 {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "release",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'conTokenBalance',
-            outputs: [
-                {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
-            ],
-            stateMutability: 'view',
-            type: 'function',
+            "inputs": [],
+            "name": "sendBackToken",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'getOwner',
-            outputs: [
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: '',
-                    type: 'address',
-                },
+                    "internalType": "uint128",
+                    "name": "ETHPrice",
+                    "type": "uint128"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "setETHPrice",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: 'account',
-                    type: 'address',
-                },
+                    "internalType": "uint16",
+                    "name": "_presaleCliff",
+                    "type": "uint16"
+                }
             ],
-            name: 'isOwner',
-            outputs: [
-                {
-                    internalType: 'bool',
-                    name: '',
-                    type: 'bool',
-                },
-            ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "setPreSaleCliff",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'sendBackToken',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
+            "inputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "_presaleVest",
+                    "type": "uint16"
+                }
+            ],
+            "name": "setPreSaleVest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: '_to',
-                    type: 'address',
-                },
-                {
-                    internalType: 'uint256',
-                    name: '_amount',
-                    type: 'uint256',
-                },
+                    "internalType": "address",
+                    "name": "trasuryAddress",
+                    "type": "address"
+                }
             ],
-            name: 'sendUSDT',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
+            "name": "setTreasury",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'tokensPerEth',
-            outputs: [
+            "inputs": [
                 {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
+                    "internalType": "uint128",
+                    "name": "USDTPrice",
+                    "type": "uint128"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "setUSDTPrice",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'tokensPerUSDT',
-            outputs: [
+            "inputs": [
                 {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
+                    "internalType": "address",
+                    "name": "ViceOwner",
+                    "type": "address"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "setViceOwner",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [
+            "inputs": [
                 {
-                    internalType: 'address',
-                    name: 'newOwner',
-                    type: 'address',
+                    "internalType": "address",
+                    "name": "_beneficiary",
+                    "type": "address"
                 },
-            ],
-            name: 'transferOwnership',
-            outputs: [
                 {
-                    internalType: 'address',
-                    name: '',
-                    type: 'address',
+                    "internalType": "uint16",
+                    "name": "_cliffMonths",
+                    "type": "uint16"
                 },
+                {
+                    "internalType": "uint16",
+                    "name": "_vestingDuration",
+                    "type": "uint16"
+                },
+                {
+                    "internalType": "uint128",
+                    "name": "_amount",
+                    "type": "uint128"
+                }
             ],
-            stateMutability: 'nonpayable',
-            type: 'function',
+            "name": "vest",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'weiRaised',
-            outputs: [
+            "inputs": [
                 {
-                    internalType: 'uint256',
-                    name: '',
-                    type: 'uint256',
-                },
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
             ],
-            stateMutability: 'view',
-            type: 'function',
+            "name": "withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
-            inputs: [],
-            name: 'withdraw',
-            outputs: [],
-            stateMutability: 'nonpayable',
-            type: 'function',
+            "inputs": [],
+            "name": "conBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
         },
+        {
+            "inputs": [],
+            "name": "conTokenBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "ethRaised",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getETHrate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_vestingsOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "getOwnerVestings",
+            "outputs": [
+                {
+                    "internalType": "bytes32[]",
+                    "name": "",
+                    "type": "bytes32[]"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getUSDTaddress",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getUSDTrate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestableAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "vestingScheduleId",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getVestingSchedule",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "beneficiary",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "cliffMonths",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "vestingMonths",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "claimsLeft",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint16",
+                            "name": "claimsDone",
+                            "type": "uint16"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "start",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "amountTotal",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "released",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "lastClaimed",
+                            "type": "uint128"
+                        },
+                        {
+                            "internalType": "uint128",
+                            "name": "monthylAmount",
+                            "type": "uint128"
+                        }
+                    ],
+                    "internalType": "struct CliffVesting.VestingSchedule",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestingSchedulesCount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getVestingSchedulesTotalAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getWithdrawableAmount",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "presaleCliff",
+            "outputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "",
+                    "type": "uint16"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "presaleVest",
+            "outputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "",
+                    "type": "uint16"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensPerEth",
+            "outputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "",
+                    "type": "uint128"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensPerUSDT",
+            "outputs": [
+                {
+                    "internalType": "uint128",
+                    "name": "",
+                    "type": "uint128"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "tokensSold",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "usdtRaised",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "viceOwner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
     ],
     BYC_TOKEN: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
     BYC_ABI: [
