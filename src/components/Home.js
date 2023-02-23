@@ -273,7 +273,7 @@ const Home = () => {
                         </div>
                       </div>
 
-                      {isConnected || isLoggedIn ? (
+                      {isConnected ? (
                         <>
                         <div className="wallet mt-3">     
                           <Button
@@ -287,14 +287,13 @@ const Home = () => {
                             show={modalShow}
                             onHide={() => setModalShow(false)}
                           />
+                          <Web3Button />
                         </div>
-                      <Button onClick={disconnectClicked}>Disconnect</Button>
                       </>
                       ) : (
-                        <div className="mt-3">
-                            <Button onClick={connectClicked}>Connect</Button>
-                        </div>
+                        <Web3Button />
                       )}
+                      
                       {
                         <DialogBox dialogBoxOpen={dialogBoxOpen} cancelButton={cancelButton}/>
                       }

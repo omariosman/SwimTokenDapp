@@ -224,26 +224,7 @@ const Header = (props) => {
                                 <Nav.Link href="#wiseConsensus">WISE Consensus</Nav.Link> */}
                                 <Nav.Link>
                                     {/* href={`${config.baseUrl}presale`} */}
-                                    {account ? (
-                                        <Nav.Link>
-                                            <>
-                                                {account.toString().substr(0, 7) + "..." + account.toString().substr(account.length - 7)}
-                                                &nbsp;
-                                                <Button className="" onClick={logout}>
-                                                    Disconnect
-                                                </Button>
-                                            </>
-                                        </Nav.Link>
-                                    ) : (
-                                        <Button
-                                            className="btn btn-primary"
-                                            onClick={() => {
-                                                navigate("/swim/presale");
-                                            }}
-                                        >
-                                            Connect Wallet
-                                        </Button>
-                                    )}
+                                    {}
                                 </Nav.Link>
                             </Nav>
                         </Navbar>

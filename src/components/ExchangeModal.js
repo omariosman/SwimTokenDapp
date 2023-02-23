@@ -97,6 +97,7 @@ const ExchangeModal = (props) => {
   const [selectedCurrency, setSelectedCurrency] = useState("eth");
   const [isMsgShown, setIsMsgShown] = useState(false);
 
+  
   const classes = useStyles();
 
   const handleCurrencyChange = (event) => {
@@ -185,30 +186,28 @@ const ExchangeModal = (props) => {
 
   const inputHandler = (e) => {
     let { name, value, id } = e.target;
-    setuseramount(value);
-    if (selectedCurrency === `eth`) {
-      let ethTokenToPrice = 58405;
-      let tokenToeth = parseFloat(value).toFixed(6);
-      let bnbPrice = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
-  
-      if (bnbPrice > 0) {
-        setbnbprice(bnbPrice); 
-      }
-    } else if (selectedCurrency === `usdt`) {
-      let usdTokenToPrice = 37;
-      let tokenTousd = parseFloat(value).toFixed(6);
-      let bnbPrice = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
-  
-      if (bnbPrice > 0) {
-        setbnbprice(bnbPrice); 
-      }
+    if (value < 0) {    
+      value = value * -1;
+  }
+  setuseramount(value);
+  if (selectedCurrency === `eth`) {
+    let ethTokenToPrice = 58405;
+    let tokenToeth = parseFloat(value).toFixed(6);
+    let bnbPrice = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
+
+    if (bnbPrice > 0) {
+      setbnbprice(bnbPrice); 
     }
-    // if (value !== '') {
-    //     setvalidatioError((old) => {
-    //         return { ...old, ['tokenAmountError']: '', ['cryptoAmountError']: '', ['transferAmountError']: '', }
-    //     })
-    // }
-  };
+  } else if (selectedCurrency === `usdt`) {
+    let usdTokenToPrice = 37;
+    let tokenTousd = parseFloat(value).toFixed(6);
+    let bnbPrice = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
+
+    if (bnbPrice > 0) {
+      setbnbprice(bnbPrice); 
+    }
+  }
+};
 
   const usdtApproval = async () => {
       // Step 1: Get the web3 instance
@@ -610,6 +609,13 @@ const ExchangeModal = (props) => {
     }
   };
 
+  const preventMinus = (e) => {
+    if (e.code === 'Minus') {
+        e.preventDefault();
+    }
+};
+
+
   return (
     <Modal
       {...props}
@@ -663,18 +669,20 @@ const ExchangeModal = (props) => {
           </div>
           <div className="forminput">
             <div className="step-box">
-              <h4 className={classes.courierNew}>Pay</h4>
-              <h5 className={classes.courierNew}>TOKEN</h5>
+              <h4 className={classes.courierNew}>Pay
+                {
+                  selectedCurrency === "eth" ?
+                  <span> ETH</span> 
+                  :
+                  <span> USDT</span>
+                }
+              </h4>
             </div>
             <div className="enter-input">
               <input
                 type="number"
-                onKeyPress={(event) => {
-                  if (!/^\d*[.]?\d{0,1}$/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
                 onChange={inputHandler}
+                onKeyPress={preventMinus}
                 class="form-control "
                 value={useramount}
                 name="useramount"
@@ -684,7 +692,7 @@ const ExchangeModal = (props) => {
                 MAX
               </button>
             </div>
-            <p className={classes.conditionParagraph}><strong>Minimum Buy:</strong> 1000 Swim | $27</p>
+            <p className={classes.conditionParagraph}><strong>Minimum Buy:</strong> 1000 Swim | $27 | 0.018 ETH</p>
           </div>
           <div className="forminput">
             <div className="step-box">

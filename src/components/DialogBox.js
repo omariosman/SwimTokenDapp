@@ -47,9 +47,7 @@ function DialogBox(props) {
       >
         <MetaMaskConnector />
         <Web3Button />
-        <Button className={classes.cancelButton} onClick={cancelButton}>
-          Cancel
-        </Button>
+
       </Dialog>
     );
   }
