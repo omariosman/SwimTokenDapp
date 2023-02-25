@@ -321,6 +321,9 @@ const Home = () => {
                         Listing begins SOON on more then 4+ Exchanges.
                       </p>
                       <p className="text-center">
+                        Please <strong>come back</strong> to <strong>claim</strong> your <strong>tokens.</strong> 
+                      </p>
+                      <p className="text-center">
                         Watch this space for claiming.
                       </p>
                     </div>

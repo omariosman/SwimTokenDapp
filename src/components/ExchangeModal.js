@@ -86,6 +86,7 @@ const useStyles = makeStyles({
 const ExchangeModal = (props) => {
   const [metamaskbalance, setmetamaskbalance] = useState(0);
   const [ethbalance, setethbalance] = useState(0);
+  const [usdtBalance, setusdtBalance] = useState(0);
   const [swimbalance, setswimbalance] = useState(0);
   const [useramount, setuseramount] = useState(0);
   const [bnbprice, setbnbprice] = useState(0);
@@ -99,7 +100,57 @@ const ExchangeModal = (props) => {
   const [selectedCurrency, setSelectedCurrency] = useState("eth");
   const [isMsgShown, setIsMsgShown] = useState(false);
 
+
+  async function fetchBalance() {
+    let web3 = null;
+    if (window.ethereum !== undefined) {
+      web3 = new Web3(Web3.givenProvider);
+    } else {
+      const provider = new WalletConnectProvider({
+        infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+        qrcode: false,
+      });
+      //Enable session (triggers QR Code modal)
+      await provider.enable();
+      //  Create Web3
+      web3 = new Web3(provider);
+    }
+    if(web3 != null) {
+      let accounts = await web3.eth.getAccounts();
+      let userAddress = accounts[0];
+
+      let ethBalance = await web3.eth.getBalance(userAddress);
+      ethBalance = ethBalance / 10 ** 18;
+      ethBalance = parseFloat(ethBalance).toFixed(6);
+      setethbalance(ethBalance);
+
+      const usdtContractGoerli = new web3.eth.Contract(
+        config.USDT_ABI,
+        config.USDT_ADDRESS
+      );
+      
+      const balance = await usdtContractGoerli.methods.balanceOf(userAddress).call();
+      console.log(`usdt balancee: ${balance}`)
+
+      const decimals = await usdtContractGoerli.methods.decimals().call();
+      const usdtBalance = balance / Math.pow(10, decimals);
+      console.log(`usdt balance: ${usdtBalance}`)
+      setusdtBalance(usdtBalance);
+
+      const swimContract = new web3.eth.Contract(
+        config.SWIM_ABI,
+        config.SWIM_TOKEN
+      );
   
+      let swimBalance = await swimContract.methods.balanceOf(userAddress).call() / 10 ** 18;
+      setswimbalance(swimBalance);
+    }
+  }
+
+  useEffect(() => {
+    fetchBalance();
+  }, []);
+
   const classes = useStyles();
 
   const handleCurrencyChange = (event) => {
@@ -221,101 +272,111 @@ const ExchangeModal = (props) => {
 
 
 const usdtApprovalGoerli = async () => {
-  // Step 1: Get the web3 instance
-  //const web3Modal = new Web3Modal();
-  //const web3 = new Web3(web3Modal.provider);
-  try{
-    var web3 = web3Auth;
-    var currentNetwork = await web3.eth.getChainId();
-    /*
-    if (currentNetwork != "0x1" && currentNetwork != "1") {
-      toast.error("Please Select ETH mainnet!!");
-      return;
-    }
-*/
-  var accounts = await web3.eth.getAccounts();
-
-  const userAddress = accounts[0];
-  if (!provider.connected) {
-    provider.enable();
-  }
-  let newProvider = new Web3(provider);
-
-  const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
-  var supply_amount = parseFloat(useramount);
-  if (isNaN(supply_amount)) {
-    alert('Invalid Amount value');
-    //throw new Error('Invalid useramount value');
-  }
-  //tweak this parameter to change the gas price
-  //const gasPriceGwei = '0.2'; // Set the gas price to 20 Gwei (can be adjusted)
-  /*
-  const contractGoerli = new newProvider.eth.Contract(
-    config.PRE_SALE_ABI,
-    config.PRE_SALE_ADDRESS
-  );
-  */
-
-  const amountToApprove = supply_amount * 10 ** 6;
-  
-  const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS_GOERL, amountToApprove).send({ 
-    from: userAddress,
-    //gasPrice: web3.utils.toWei(gasPriceGwei, 'Gwei')
- });
-
-  const contract = new newProvider.eth.Contract(
-    config.PRE_SALE_ABI_GOERLI,
-    config.PRE_SALE_ADDRESS_GOERL
-  );
-  //call CliffVesting BuyTokenWithUSDT function
-  //supply_amount = (supply_amount * 10 ** 6);
-  
-  var tx_builder = "";
-  tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
-  let encoded_tx = tx_builder.encodeABI();
-  let gasPrice = await web3.eth.getGasPrice();
-
-  const tx = {
-    from: userAddress,
-    to: config.PRE_SALE_ADDRESS_GOERL,
-    gasPrice: gasPrice,
-    data: encoded_tx
-  }
-
-  const gas = await web3.eth.estimateGas(tx);
-
-  tx.gas = gas;
-  const receipt = await web3.eth.sendTransaction(tx);
-
-  if (receipt) {
-    //toast.success();
-    contract.events.newVesting().on('data', (event) => {
-      console.log(`Print event: ${event.returnValues}`);
-      console.log(JSON.stringify(event.returnValues, null, 4));
-      // Do something with the emitted event
-    });
-    console.log("Transaction", receipt);
-    //await metamaskConfirm(txData.transactionHash);
+  let web3 = null;
+  if (window.ethereum !== undefined) {
+    web3 = new Web3(Web3.givenProvider);
   } else {
-    console.log("Transaction123", receipt);
+    const provider = new WalletConnectProvider({
+      infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+      qrcode: false,
+    });
 
-    toast.error(`${receipt.message}`);
-    // setisprocessing(false)
-    // setisDialogOpen(false)
-    return false;
+    //  Enable session (triggers QR Code modal)
+    await provider.enable();
+
+    //  Create Web3
+    web3 = new Web3(provider);
   }
-  } catch(error) {
-    console.log(error);
-    console.log(`Tx Failed`);
+  if (web3 != null) {
+    try{
+      setisprocessing(true);
+
+      var currentNetwork = await web3.eth.getChainId();
+  
+    var accounts = await web3.eth.getAccounts();
+  
+    const userAddress = accounts[0];
+    /*
+    if (!provider.connected) {
+      provider.enable();
+    }
+    let newProvider = new Web3(provider);
+  */
+    const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
+    var supply_amount = parseFloat(useramount);
+    if (isNaN(supply_amount)) {
+      alert('Invalid Amount value');
+    }
+  
+    const amountToApprove = supply_amount * 10 ** 6;
+    
+    const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS_GOERL, amountToApprove).send({ 
+      from: userAddress,
+   });
+  
+    const contract = new web3.eth.Contract(
+      config.PRE_SALE_ABI_GOERLI,
+      config.PRE_SALE_ADDRESS_GOERL
+    );
+    
+    var tx_builder = "";
+    tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
+    let encoded_tx = tx_builder.encodeABI();
+    let gasPrice = await web3.eth.getGasPrice();
+  
+    const tx = {
+      from: userAddress,
+      to: config.PRE_SALE_ADDRESS_GOERL,
+      gasPrice: gasPrice,
+      data: encoded_tx
+    }
+  
+    const gas = await web3.eth.estimateGas(tx);
+  
+    tx.gas = gas;
+    const receipt = await web3.eth.sendTransaction(tx);
+  
+    if (receipt) {
+    
+      contract.events.newVesting().on('data', (event) => {
+        console.log(`Print event: ${event.returnValues}`);
+        console.log(JSON.stringify(event.returnValues, null, 4));
+        // Do something with the emitted event
+      });
+    } else {
+      toast.error(`${receipt.message}`);
+      return false;
+    }
+    setisprocessing(false);
+
+    } catch(error) {
+      console.log(error);
+      console.log(`Tx Failed`);
+      setisprocessing(false);
+    }
+  } else {
+    alert(`Install Metamask wallet`);
   }
 };
 
   const usdtApproval = async () => {
-      // Step 1: Get the web3 instance
-      //const web3Modal = new Web3Modal();
-      //const web3 = new Web3(web3Modal.provider);
+    let web3 = null;
+    if (window.ethereum !== undefined) {
+      web3 = new Web3(Web3.givenProvider);
+    } else {
+      const provider = new WalletConnectProvider({
+        infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+        qrcode: false,
+      });
+  
+      //  Enable session (triggers QR Code modal)
+      await provider.enable();
+  
+      //  Create Web3
+      web3 = new Web3(provider);
+    }
+    if (web3 != null) {
       try{
-        var web3 = web3Auth;
         var currentNetwork = await web3.eth.getChainId();
         
         if (currentNetwork != "0x1" && currentNetwork != "1") {
@@ -326,41 +387,25 @@ const usdtApprovalGoerli = async () => {
       var accounts = await web3.eth.getAccounts();
 
       const userAddress = accounts[0];
-      if (!provider.connected) {
-        provider.enable();
-      }
-      let newProvider = new Web3(provider);
-
 
       const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
       var supply_amount = parseFloat(useramount);
       if (isNaN(supply_amount)) {
         alert('Invalid Amount value');
-        //throw new Error('Invalid useramount value');
       }
-      //tweak this parameter to change the gas price
-      //const gasPriceGwei = '0.2'; // Set the gas price to 20 Gwei (can be adjusted)
-      /*
-      const contractGoerli = new newProvider.eth.Contract(
-        config.PRE_SALE_ABI,
-        config.PRE_SALE_ADDRESS
-      );
-      */
 
       const amountToApprove = supply_amount * 10 ** 6;
       
       const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS, amountToApprove).send({ 
         from: userAddress,
-        //gasPrice: web3.utils.toWei(gasPriceGwei, 'Gwei')
      });
+     
 
-      const contract = new newProvider.eth.Contract(
+      const contract = new web3.eth.Contract(
         config.PRE_SALE_ABI,
         config.PRE_SALE_ADDRESS
       );
-      //call CliffVesting BuyTokenWithUSDT function
-      //supply_amount = (supply_amount * 10 ** 6);
-      
+
       var tx_builder = "";
       tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
       let encoded_tx = tx_builder.encodeABI();
@@ -379,42 +424,28 @@ const usdtApprovalGoerli = async () => {
       const receipt = await web3.eth.sendTransaction(tx);
 
       if (receipt) {
-        //toast.success();
         contract.events.newVesting().on('data', (event) => {
           console.log(`Print event: ${event.returnValues}`);
           console.log(JSON.stringify(event.returnValues, null, 4));
-          // Do something with the emitted event
         });
         console.log("Transaction", receipt);
-        //await metamaskConfirm(txData.transactionHash);
       } else {
         console.log("Transaction123", receipt);
 
         toast.error(`${receipt.message}`);
         // setisprocessing(false)
         // setisDialogOpen(false)
-        return false;
       }
+      setisprocessing(false);
       } catch(error) {
         console.log(error);
         console.log(`Tx Failed`);
+        setisprocessing(false);
       }
+    } else {
+      alert(`Install Metamask wallet`);
+    }
   };
-  
-
-  const getCircularReplacer = () => {
-    const seen = new WeakSet();
-    return (key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return;
-        }
-        seen.add(value);
-      }
-      return value;
-    };
-  };
-  
 
   const handleSubmitTokenWithETHGoerli = async () => {
     let web3 = null;
@@ -501,82 +532,86 @@ const usdtApprovalGoerli = async () => {
 
 
   const handleSubmitTokenWithETH = async () => {
-    var supply_amount = parseFloat(useramount);
-
-    if (!supply_amount) {
-      toast.error("Please Enter amount");
-      return false;
+    let web3 = null;
+    if (window.ethereum !== undefined) {
+      web3 = new Web3(Web3.givenProvider);
+    } else {
+      const provider = new WalletConnectProvider({
+        infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+        qrcode: false,
+      });
+  
+      //  Enable session (triggers QR Code modal)
+      await provider.enable();
+  
+      //  Create Web3
+      web3 = new Web3(provider);
     }
+    if (web3 != null) {
+      var supply_amount = parseFloat(useramount);
 
-    // setisDialogOpen(true)
-    try {
-      var web3 = web3Auth;
-      var currentNetwork = await web3.eth.getChainId();
-      if (currentNetwork != "0x1" && currentNetwork != "1") {
-        toast.error("Please Select ETH mainnet!!");
-        return;
-      }
-
-      var accounts = await web3.eth.getAccounts();
-      let from_address = accounts[0];
-      var getBalace = (await web3.eth.getBalance(from_address)) / 10 ** 18;
-      var currentBal = parseFloat(getBalace).toFixed(6);
-
-      //   if (currentBal < supply_amount) {
-      //     toast.error(`insufficient funds for transfer`);
-      //     return false;
-      //   }
-      setisprocessing(true);
-
-      if (!provider.connected) {
-        provider.enable();
-      }
-      let newProvider = new Web3(provider);
-      const contract = new newProvider.eth.Contract(
-        config.PRE_SALE_ABI,
-        config.PRE_SALE_ADDRESS
-      );
-      var tx_builder = "";
-
-      //supply_amount = (supply_amount * 10 ** 18);
-      supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
-
-      tx_builder = await contract.methods.buyTokensWithEth();
-      let encoded_tx = tx_builder.encodeABI();
-      let gasPrice = await web3.eth.getGasPrice();
-      const tx = {
-        from: from_address,
-        to: config.PRE_SALE_ADDRESS,
-        gasPrice: gasPrice,
-        data: encoded_tx,
-        value: supply_amount
-      }
-      const gas = await web3.eth.estimateGas(tx);
-      tx.gas = gas;
-
-      const receipt = await web3.eth.sendTransaction(tx);
-      if (receipt) {
-
-        console.log("Transaction", receipt);
-        // await metamaskConfirm(txData.transactionHash);
-      } else {
-        console.log("Transaction123", receipt);
-
-        toast.error(`${receipt.message}`);
-        // setisprocessing(false)
-        // setisDialogOpen(false)
+      if (!supply_amount) {
+        toast.error("Please Enter amount");
         return false;
       }
-      setisprocessing(false);
-    } catch (error) {
-      console.log("err", error);
-      console.log(JSON.stringify(error, null, 4));
-      toast.error(
-        `Something went wrong! Please try again later. ${error.toString()}`
-      );
-      setisprocessing(false);
-      // setisDialogOpen(false)
-      return false;
+  
+      // setisDialogOpen(true)
+      try {
+        //var web3 = web3Auth;
+        var currentNetwork = await web3.eth.getChainId();
+        if (currentNetwork != "0x1" && currentNetwork != "1") {
+          toast.error("Please Select ETH mainnet!!");
+          return;
+        }
+  
+        var accounts = await web3.eth.getAccounts();
+        let from_address = accounts[0];
+        var getBalace = (await web3.eth.getBalance(from_address)) / 10 ** 18;
+        var currentBal = parseFloat(getBalace).toFixed(6);
+  
+        setisprocessing(true);
+
+        const contract = new web3.eth.Contract(
+          config.PRE_SALE_ABI,
+          config.PRE_SALE_ADDRESS
+        );
+        var tx_builder = "";
+  
+        supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
+  
+        tx_builder = await contract.methods.buyTokensWithEth();
+        let encoded_tx = tx_builder.encodeABI();
+        let gasPrice = await web3.eth.getGasPrice();
+        const tx = {
+          from: from_address,
+          to: config.PRE_SALE_ADDRESS,
+          gasPrice: gasPrice,
+          data: encoded_tx,
+          value: supply_amount
+        }
+        const gas = await web3.eth.estimateGas(tx);
+        tx.gas = gas;
+  
+        const receipt = await web3.eth.sendTransaction(tx);
+        if (receipt) {
+
+        } else {
+  
+          toast.error(`${receipt.message}`);
+
+          return false;
+        }
+        setisprocessing(false);
+      } catch (error) {
+        console.log("err", error);
+        console.log(JSON.stringify(error, null, 4));
+        toast.error(
+          `Something went wrong! Please try again later. ${error.toString()}`
+        );
+        setisprocessing(false);
+      }
+    } else {
+      alert(`Install Metamask wallet`);
     }
   };
 
@@ -828,7 +863,7 @@ const usdtApprovalGoerli = async () => {
             <img alt="USDT" src="images/icons/usdt.png" />
             <p style={{ lineHeight: "3rem", fontSize: "0.75rem", padding: "1px" }}>
               {" "}
-              USDT BALANCE: {metamaskbalance}{" "}
+              USDT BALANCE: {usdtBalance}{" "}
             </p>
           </div>
           <div className="balance-here d-flex align-items-center">
@@ -884,22 +919,22 @@ const usdtApprovalGoerli = async () => {
       </Modal.Body>
       <Modal.Footer>
         {isprocessing && (
-          <Button disabled={true} className="w-100">
-            Proceeding...
-          </Button>
+          <button disabled className={classes.buyNowBtn}>
+            Proceeding ... Please Wait
+          </button>
         )}
         {!isprocessing && (
-            bnbprice < 1000
+            bnbprice < 10
             ? 
             (
-              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
+              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClick} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
               Buy Now
             </button>
 
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
               Buy Now
             </button>
             )
