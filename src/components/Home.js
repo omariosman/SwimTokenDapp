@@ -20,6 +20,8 @@ import { useAccount } from "wagmi";
 import { useAuth } from '../contexts/AuthContext2';
 import Web3 from 'web3';
 import { useBalance } from 'wagmi'
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import toast, { Toaster } from "react-hot-toast";
 
 const useStyles = makeStyles((theme) => ({
   loaderBar: {
@@ -208,6 +210,63 @@ const Home = () => {
     setDialogBoxOpen(false);
   }
 
+  const getVestingId = async () => {
+    console.log(`Get vesting id`);
+    let web3 = null;
+    if (window.ethereum !== undefined) {
+      web3 = new Web3(Web3.givenProvider);
+    } else {
+      const provider = new WalletConnectProvider({
+        infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+        qrcode: false,
+      });
+  
+      //  Enable session (triggers QR Code modal)
+      await provider.enable();
+  
+      //  Create Web3
+      web3 = new Web3(provider);
+    }
+    if (web3 != null) {
+      let accounts = await web3.eth.getAccounts();
+      let userAddress = accounts[0];
+
+      const contract = new web3.eth.Contract(
+        config.PRE_SALE_ABI,
+        config.PRE_SALE_ADDRESS
+      );
+      
+      var tx_builder = "";
+      tx_builder = await contract.methods.getOwnerVestings(userAddress);
+      let encoded_tx = tx_builder.encodeABI();
+      let gasPrice = await web3.eth.getGasPrice();
+    
+      const tx = {
+        from: userAddress,
+        to: config.PRE_SALE_ADDRESS_GOERL,
+        gasPrice: gasPrice,
+        data: encoded_tx
+      }
+    
+      const gas = await web3.eth.estimateGas(tx);
+    
+      tx.gas = gas;
+      const receipt = await web3.eth.sendTransaction(tx);
+    
+      if (receipt) {
+      
+        console.log(JSON.stringify(receipt, null, 4));
+
+      } else {
+        toast.error(`${receipt.message}`);
+        return false;
+      }
+    } else {
+      alert(`Install Metamask wallet`)
+    }
+
+  }
+
   return (
     <>
       <section className="hero-section-pre">
@@ -320,9 +379,7 @@ const Home = () => {
                       <p className="text-center">
                         Listing begins SOON on more then 4+ Exchanges.
                       </p>
-                      <p className="text-center">
-                        Please <strong>come back</strong> to <strong>claim</strong> your <strong>tokens.</strong> 
-                      </p>
+                      <button className="btn-success" onClick={getVestingId}>Get Vesting ID</button>
                       <p className="text-center">
                         Watch this space for claiming.
                       </p>
