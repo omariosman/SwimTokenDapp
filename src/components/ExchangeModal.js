@@ -924,7 +924,7 @@ const usdtApprovalGoerli = async () => {
           </button>
         )}
         {!isprocessing && (
-            bnbprice < 10
+            bnbprice < 999
             ? 
             (
               <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClick} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
