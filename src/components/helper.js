@@ -1,5 +1,5 @@
 import WalletConnectProvider from "@walletconnect/web3-provider";
-
+/*
 export let provider = new WalletConnectProvider({
   rpc: {
     1: "https://mainnet.infura.io/v3/9255e09afae94ffa9ea052ce163b8c90",
@@ -8,6 +8,11 @@ export let provider = new WalletConnectProvider({
   qrcodeModalOptions: {
     mobileLinks: ["rainbow", "metamask", "argent", "trust"],
   },
+});
+*/
+export const provider = new WalletConnectProvider({
+  infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+  qrcode: false,
 });
 
 export const walletConnect = async () => {

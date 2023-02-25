@@ -19,18 +19,26 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useAccount } from "wagmi";
 import { useAuth } from '../contexts/AuthContext2';
 import Web3 from 'web3';
+import { useBalance } from 'wagmi'
 
 const useStyles = makeStyles((theme) => ({
   loaderBar: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    textAlign: 'center'
   },
   value: {
     textAlign: 'center',
     margin: 0,
+    textAlign: 'center'
+  },
+  amountHeader: {
+    textAlign: 'center'
+  },
+  web3button : {
+    marginTop: '1rem'
   }
-
 }));
 
 const Home = () => {
@@ -55,6 +63,7 @@ const Home = () => {
     setMetamaskConnected(false);
   }
 
+
   const {
     connector: activeConnector,
     isConnected,
@@ -63,6 +72,10 @@ const Home = () => {
     isDisconnected,
     isDisconnecting,
   } = useAccount();
+
+  const { data, isError, isLoading } = useBalance({
+    address: address,
+  })
 
   useEffect(() => {
     if (isConnected) {
@@ -267,9 +280,14 @@ const Home = () => {
                       </div>
                       <div className={`loader-bar ${classes.loaderBar}`}>
                       <div className={`value ${classes.value}`}>
-                          <h5>Amount Raised $
-                          <NumericFormat className="NumericFormat"  value={parseFloat(soldToken.sold).toFixed(2)} allowLeadingZeros thousandSeparator="," />
+                          <h5 className={classes.amountHeader}><strong>Amount Raised:</strong> $70,000
                              </h5>
+                             <div>
+                             { (isLoading) ? <div>Fetching balance…</div>:null}
+                             { (isError) ? <div>Error fetching balance…</div>:null}
+                          Balance: {data?.formatted} {data?.symbol}
+                        </div>
+                        
                         </div>
                       </div>
 
@@ -291,7 +309,9 @@ const Home = () => {
                         </div>
                       </>
                       ) : (
+                        <div className={classes.web3button}>
                         <Web3Button />
+                        </div>
                       )}
                       
                       {

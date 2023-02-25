@@ -4,7 +4,9 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import Web3 from "web3";
 import Web3Modal from "web3modal";
+import { web3Modal } from "./Header";
 import WalletConnect from "@walletconnect/web3-provider";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import toast, { Toaster } from "react-hot-toast";
 import config from "../config/config";
 import { Dialog, Classes } from "@blueprintjs/core";
@@ -109,7 +111,15 @@ const ExchangeModal = (props) => {
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETH();
     } else {
-    usdtApproval();
+      usdtApproval();
+  }
+  };
+
+  const handleBuyNowClickGoerli = () => {
+    if (selectedCurrency === "eth") {
+      handleSubmitTokenWithETHGoerli();
+    } else {
+      usdtApprovalGoerli();
   }
   };
 
@@ -142,12 +152,12 @@ const ExchangeModal = (props) => {
 
   const getMetamaskBalance = async (web3) => {
     var currentNetwork = await web3.eth.getChainId();
-
+/*
     if (currentNetwork != "1") {
       toast.error("Please Select ETH mainnet!!");
       return;
     }
-
+*/
     const accounts = await web3.eth.getAccounts();
     var from_address = accounts[0];
 
@@ -206,6 +216,97 @@ const ExchangeModal = (props) => {
     if (bnbPrice > 0) {
       setbnbprice(bnbPrice); 
     }
+  }
+};
+
+
+const usdtApprovalGoerli = async () => {
+  // Step 1: Get the web3 instance
+  //const web3Modal = new Web3Modal();
+  //const web3 = new Web3(web3Modal.provider);
+  try{
+    var web3 = web3Auth;
+    var currentNetwork = await web3.eth.getChainId();
+    /*
+    if (currentNetwork != "0x1" && currentNetwork != "1") {
+      toast.error("Please Select ETH mainnet!!");
+      return;
+    }
+*/
+  var accounts = await web3.eth.getAccounts();
+
+  const userAddress = accounts[0];
+  if (!provider.connected) {
+    provider.enable();
+  }
+  let newProvider = new Web3(provider);
+
+  const usdtContract = new web3.eth.Contract(config.USDT_ABI, config.USDT_ADDRESS);
+  var supply_amount = parseFloat(useramount);
+  if (isNaN(supply_amount)) {
+    alert('Invalid Amount value');
+    //throw new Error('Invalid useramount value');
+  }
+  //tweak this parameter to change the gas price
+  //const gasPriceGwei = '0.2'; // Set the gas price to 20 Gwei (can be adjusted)
+  /*
+  const contractGoerli = new newProvider.eth.Contract(
+    config.PRE_SALE_ABI,
+    config.PRE_SALE_ADDRESS
+  );
+  */
+
+  const amountToApprove = supply_amount * 10 ** 6;
+  
+  const result = await usdtContract.methods.approve(config.PRE_SALE_ADDRESS_GOERL, amountToApprove).send({ 
+    from: userAddress,
+    //gasPrice: web3.utils.toWei(gasPriceGwei, 'Gwei')
+ });
+
+  const contract = new newProvider.eth.Contract(
+    config.PRE_SALE_ABI_GOERLI,
+    config.PRE_SALE_ADDRESS_GOERL
+  );
+  //call CliffVesting BuyTokenWithUSDT function
+  //supply_amount = (supply_amount * 10 ** 6);
+  
+  var tx_builder = "";
+  tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
+  let encoded_tx = tx_builder.encodeABI();
+  let gasPrice = await web3.eth.getGasPrice();
+
+  const tx = {
+    from: userAddress,
+    to: config.PRE_SALE_ADDRESS_GOERL,
+    gasPrice: gasPrice,
+    data: encoded_tx
+  }
+
+  const gas = await web3.eth.estimateGas(tx);
+
+  tx.gas = gas;
+  const receipt = await web3.eth.sendTransaction(tx);
+
+  if (receipt) {
+    //toast.success();
+    contract.events.newVesting().on('data', (event) => {
+      console.log(`Print event: ${event.returnValues}`);
+      console.log(JSON.stringify(event.returnValues, null, 4));
+      // Do something with the emitted event
+    });
+    console.log("Transaction", receipt);
+    //await metamaskConfirm(txData.transactionHash);
+  } else {
+    console.log("Transaction123", receipt);
+
+    toast.error(`${receipt.message}`);
+    // setisprocessing(false)
+    // setisDialogOpen(false)
+    return false;
+  }
+  } catch(error) {
+    console.log(error);
+    console.log(`Tx Failed`);
   }
 };
 
@@ -301,6 +402,104 @@ const ExchangeModal = (props) => {
   };
   
 
+  const getCircularReplacer = () => {
+    const seen = new WeakSet();
+    return (key, value) => {
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      return value;
+    };
+  };
+  
+
+  const handleSubmitTokenWithETHGoerli = async () => {
+    let web3 = null;
+    if (window.ethereum !== undefined) {
+      web3 = new Web3(Web3.givenProvider);
+    } else {
+      const provider = new WalletConnectProvider({
+        infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
+        qrcode: false,
+      });
+  
+      //  Enable session (triggers QR Code modal)
+      await provider.enable();
+  
+      //  Create Web3
+      web3 = new Web3(provider);
+    }
+    if (web3 != null) {
+      //  Create WalletConnect Provider
+      var supply_amount = parseFloat(useramount);
+
+      if (!supply_amount) {
+        toast.error("Please Enter amount");
+        return false;
+      }
+
+      try {
+        var currentNetwork = await web3.eth.getChainId();
+
+        var accounts = await web3.eth.getAccounts();
+        let from_address = accounts[0];
+        var getBalace = (await web3.eth.getBalance(from_address)) / 10 ** 18;
+        var currentBal = parseFloat(getBalace).toFixed(6);
+
+        setisprocessing(true);
+
+        const contract = new web3.eth.Contract(
+          config.PRE_SALE_ABI_GOERLI,
+          config.PRE_SALE_ADDRESS_GOERL
+        );
+        var tx_builder = "";
+
+        supply_amount = web3.utils.toWei(supply_amount.toString(), 'ether');
+
+        tx_builder = await contract.methods.buyTokensWithEth();
+        let encoded_tx = tx_builder.encodeABI();
+        let gasPrice = await web3.eth.getGasPrice();
+        const tx = {
+          from: from_address,
+          to: config.PRE_SALE_ADDRESS_GOERL,
+          gasPrice: gasPrice,
+          data: encoded_tx,
+          value: supply_amount
+        }
+        const gas = await web3.eth.estimateGas(tx);
+        tx.gas = gas;
+
+        const receipt = await web3.eth.sendTransaction(tx);
+        if (receipt) {
+
+          console.log("Transaction", receipt);
+          
+        } else {
+          console.log("Transaction123", receipt);
+
+          toast.error(`${receipt.message}`);
+
+          return false;
+        }
+        setisprocessing(false);
+      } catch (error) {
+        console.log("err", error);
+        console.log(JSON.stringify(error, null, 4));
+        toast.error(
+          `Something went wrong! Please try again later. ${error.toString()}`
+        );
+        setisprocessing(false);
+        return false;
+      }
+  } else {
+    alert(`Install Metamask wallet`);
+  }
+  };
+
+
   const handleSubmitTokenWithETH = async () => {
     var supply_amount = parseFloat(useramount);
 
@@ -368,28 +567,7 @@ const ExchangeModal = (props) => {
         // setisDialogOpen(false)
         return false;
       }
-        /*
-
-      let gasLimit = await web3.eth.estimateGas({
-        //gasPrice: web3.utils.toHex(gasPrice),
-        to: config.PRE_SALE_ADDRESS,
-        from: from_address,
-        data: encoded_tx,
-        value: supply_amount,
-        // chainId: chainId,
-      });
-      const txData = await web3.eth.sendTransaction({
-        //gasPrice: web3.utils.toHex(gasPrice),
-        gasPrice: gasPrice,
-        gas: web3.utils.toHex(gasLimit),
-        to: config.PRE_SALE_ADDRESS,
-        from: from_address,
-        data: encoded_tx,
-        value: supply_amount,
-        // chainId: chainId,
-      });
-      */
-
+      setisprocessing(false);
     } catch (error) {
       console.log("err", error);
       console.log(JSON.stringify(error, null, 4));
@@ -631,12 +809,11 @@ const ExchangeModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <div className={`exchange-modal`}>
-          <p className={classes.message}>Buy with usdt after the 26th feb!</p>
           <div className={classes.balanceHere}>
             <span><b>Choose a network: &nbsp;</b></span>
             <select value={selectedCurrency} onChange={handleCurrencyChange} className={classes.dropdown}>
               <option value="eth">ETH</option>
-              <option disabled value="usdt">USDT</option>
+              <option value="usdt">USDT</option>
             </select>
           </div>
           <div className={classes.balancesContainer}>
@@ -715,14 +892,14 @@ const ExchangeModal = (props) => {
             bnbprice < 1000
             ? 
             (
-              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClick} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
+              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
               Buy Now
             </button>
 
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
               Buy Now
             </button>
             )

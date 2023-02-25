@@ -32,7 +32,7 @@ const providerOptions = {
         },
     },
 };
-const web3Modal = new Web3Modal({
+export const web3Modal = new Web3Modal({
     cacheProvider: true,
     providerOptions, // required
 });
@@ -167,14 +167,6 @@ const Header = (props) => {
                         </Navbar.Brand>
                         {/* <Navbar.Toggle  /> */}
                         {/* ======================Mobile header====================  */}
-                        <Button
-                            className="showHide"
-                            onClick={() => {
-                                navigate("/presale");
-                            }}
-                        >
-                            Connect Wallet
-                        </Button>
 
                         <div id="menuToggle">
                             <input type="checkbox" />
