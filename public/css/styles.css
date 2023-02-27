@@ -35,7 +35,9 @@ body {
   font-family: "poppins semi";
   src: url("../fonts/Poppins-SemiBold.ttf");
 }
-
+.buyButton:hover {
+  color: red;
+}
 .outer-body {
   background-image: linear-gradient(
     117deg,
@@ -1442,7 +1444,7 @@ button.btn:hover {
 .unique-wisdom p {
   text-align: center;
   font-size: 1.1rem;
-  padding: 1.0rem 0rem 1.0rem 0rem;
+  padding: 1rem 0rem 1rem 0rem;
 }
 
 .unique-wisdom {
@@ -1680,7 +1682,7 @@ menuItem {
 .loader-bar {
   position: relative;
   width: 100%;
-  border: 2px solid #ac671a;
+  /* border: 2px solid #ac671a; */
   border-radius: 20px;
   font-size: 1rem;
   font-weight: 500;
@@ -2853,11 +2855,12 @@ rect.highcharts-background {
   border-radius: 10px 0px 0px 10px;
 }
 
-.max-btn {
+/* .max-btn {
   border-radius: 0px 10px 10px 0px !important;
-}
+  background-color: red !important;
+} */
 
-.enter-input button {
+/* .enter-input button {
   border: none;
   height: 42px;
   border-radius: 10px;
@@ -2872,7 +2875,7 @@ rect.highcharts-background {
   background: -o-linear-gradient(left, #2eaae5, #8f77da, #fe3dce);
   background: linear-gradient(to right, #2eaae5, #8f77da, #fe3dce);
   color: #fff;
-}
+} */
 
 .right-text-glob {
   padding: 0 85px;
@@ -3285,7 +3288,6 @@ a {
 
 /*tablets, ipads (landscape)*/
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-
 }
 
 /*low resolution tablets, mobiles (landscape)*/
