@@ -1,0 +1,56 @@
+.header {
+  background-color: #0c0d23;
+  color: white !important;
+}
+.body {
+  background: lightgray;
+  padding: 2rem;
+}
+.form-footer {
+  background: lightgray;
+  padding: 1.5rem;
+}
+.buyNowBtn {
+  border: 1px solid #2d3436;
+  padding: 10px;
+  color: white;
+  background-color: #0c0d23;
+  width: 40%;
+  margin: auto;
+  border-radius: 5px;
+}
+.maxbtn {
+  padding: 12px;
+  /* width: 100px; */
+  color: white;
+  background-color: #0c0d23 !important;
+  border-radius: 50%;
+}
+.choose {
+  font-size: 20px;
+  display: inline-block;
+  font-weight: 500;
+}
+.balancescontainer {
+  border: 2px solid #0c0d23;
+  margin: 0.75rem;
+  padding: 0.75rem;
+}
+.icons {
+  margin-right: 8px;
+}
+.label {
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 12px;
+}
+.inpt {
+  outline: none;
+  background: transparent;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  border-bottom: 2px solid #0c0d23 !important;
+  width: 80% !important;
+  padding-left: 20px !important;
+}
