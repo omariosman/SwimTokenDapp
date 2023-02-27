@@ -11,36 +11,36 @@ import Footer from "./Footer";
 import Cookies from "js-cookie";
 import { useCountdown } from "./useCountdown";
 import { padding } from "@mui/system";
-import axios from 'axios';
-import { NumericFormat } from 'react-number-format';
+import axios from "axios";
+import { NumericFormat } from "react-number-format";
 import { Web3Button } from "@web3modal/react";
 import DialogBox from "./DialogBox";
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 import { useAccount } from "wagmi";
-import { useAuth } from '../contexts/AuthContext2';
-import Web3 from 'web3';
-import { useBalance } from 'wagmi'
+import { useAuth } from "../contexts/AuthContext2";
+import Web3 from "web3";
+import { useBalance } from "wagmi";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import toast, { Toaster } from "react-hot-toast";
 
 const useStyles = makeStyles((theme) => ({
   loaderBar: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center'
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
   value: {
-    textAlign: 'center',
+    textAlign: "center",
     margin: 0,
-    textAlign: 'center'
+    textAlign: "center",
   },
   amountHeader: {
-    textAlign: 'center'
+    textAlign: "center",
   },
-  web3button : {
-    marginTop: '1rem'
-  }
+  web3button: {
+    marginTop: "1rem",
+  },
 }));
 
 const Home = () => {
@@ -50,7 +50,7 @@ const Home = () => {
   const [connect, setConnect] = React.useState(false);
   const [getWeb3, setGetWeb3] = React.useState({});
   const [walletConnected, setWalletConnected] = useState(false);
-  const [soldToken,setsoldToken] = useState([])
+  const [soldToken, setsoldToken] = useState([]);
   const [accountAddr, setAccountAddr] = useState("");
   const [dialogBoxOpen, setDialogBoxOpen] = useState(false);
   const [metamaskConnected, setMetamaskConnected] = useState(false);
@@ -58,13 +58,11 @@ const Home = () => {
 
   const onMetamaskConnect = () => {
     setMetamaskConnected(true);
-  }
-
+  };
 
   const onMetamaskDisconnect = () => {
     setMetamaskConnected(false);
-  }
-
+  };
 
   const {
     connector: activeConnector,
@@ -77,7 +75,7 @@ const Home = () => {
 
   const { data, isError, isLoading } = useBalance({
     address: address,
-  })
+  });
 
   useEffect(() => {
     if (isConnected) {
@@ -95,23 +93,17 @@ const Home = () => {
     setAccountAddr(addr);
   }
 
-  const getSoldTokenAPI = async() => {
+  const getSoldTokenAPI = async () => {
     const response = await axios({
-        method: 'post',
-        url: "https://futureittechsolutions.com:5001/api/getsoldtoken",
-        data: {
-        }
+      method: "post",
+      url: "https://futureittechsolutions.com:5001/api/getsoldtoken",
+      data: {},
     })
-    .then(function (response) {
-      setsoldToken(response.data.data[0])
-        })
-        .catch(
-            error => {
-            }
-
-        );
-    ;
-}
+      .then(function (response) {
+        setsoldToken(response.data.data[0]);
+      })
+      .catch((error) => {});
+  };
 
   const DateTimeDisplay = ({ value, type, isDanger }) => {
     return (
@@ -163,7 +155,7 @@ const Home = () => {
   const THREE_DAYS_IN_MS = 27 * 24 * 60 * 60 * 1000;
   const NOW_IN_MS = new Date().getTime();
   const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
-  
+
   const ExpiredNotice = () => {
     return (
       <div className="expired-notice">
@@ -188,27 +180,24 @@ const Home = () => {
     );
   };
 
-  
-
   useEffect(() => {
     // if(localStorage.getItem('provider')){
     // connectWallet()
     // }
-    getSoldTokenAPI()
+    getSoldTokenAPI();
   }, []);
 
   const connectClicked = () => {
     setDialogBoxOpen(true);
-  }
+  };
 
   const disconnectClicked = () => {
     setDialogBoxOpen(true);
-  }
-
+  };
 
   const cancelButton = () => {
     setDialogBoxOpen(false);
-  }
+  };
 
   const getVestingId = async () => {
     console.log(`Get vesting id`);
@@ -220,10 +209,10 @@ const Home = () => {
         infuraId: "9255e09afae94ffa9ea052ce163b8c90", // Required
         qrcode: false,
       });
-  
+
       //  Enable session (triggers QR Code modal)
       await provider.enable();
-  
+
       //  Create Web3
       web3 = new Web3(provider);
     }
@@ -251,112 +240,125 @@ const Home = () => {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS_GOERL,
         gasPrice: gasPrice,
-        data: encoded_tx
-      }
-    
+        data: encoded_tx,
+      };
+
       const gas = await web3.eth.estimateGas(tx);
-    
+
       tx.gas = gas;
       const receipt = await web3.eth.sendTransaction(tx);
-    
-      if (receipt) {
-      
-        console.log(JSON.stringify(receipt, null, 4));
 
+      if (receipt) {
+        console.log(JSON.stringify(receipt, null, 4));
       } else {
         toast.error(`${receipt.message}`);
         return false;
       }
       */
     } else {
-      alert(`Install Metamask wallet`)
+      alert(`Install Metamask wallet`);
     }
-
-  }
+  };
 
   return (
     <>
       <section className="hero-section-pre">
         <Header connectNow={connect} setwalletConnected={getWalletConnected} />
-        
-        <div className="login-banner" style={{ backgroundImage:`url(assets/img/nature.png)`,backgroundRepeat:"no-repeat", backgroundPositionX: "center", backgroundPositionY: "center", backgroundSize: "250px", backgroundAttachment: "fixed", paddingBottom: "30px", minHeight: "650px"}}>
-          
-            
-            <Row className="d-flex align-items-center">
-              <Col md={5} style={{marginTop: "80px"}}>
-                <div className="presale-box my-5 ">
-                  <div className="mg-left-auto">
-                    <div className="wisdom2">
-                      <h3>
-                        Powered by <span className="tommorow">1.3 Million</span>{" "}
-                        wise-ards.
-                      </h3>
-                    </div>
-                    <div className="wisdom2">
-                      <h3>
-                        <span className="tommorow">SWIM</span>-Spread Wisdom
-                      </h3>
-                      <h6>
-                        Unlock the power of wisdom for a healthier Earth and
-                        humanity with 'WISE ME,' the revolutionary NFT
-                        Play-To-Earn game for toddlers and parents that combines
-                        Gaming-Earning-Learning. #spreadwisdom.
-                      </h6>
-                      <div className="hero-button">
-                        <Button className="btn btn-primary">
-                          <a
-                            target="_blank"
-                            href="assets/whitepaper/SWIM_Whitepaper.pdf"
-                          >
-                            WHITEPAPER
-                          </a>
-                        </Button>
-                        <Button className="btn btn-primary ms-3">
-                          <a
-                            target="_blank"
-                            href="assets/audit/swim-audit-report.pdf"
-                          >
-                            SWIM AUDIT
-                          </a>
-                        </Button>
-                      </div>
+
+        <div
+          className="login-banner"
+          style={{
+            backgroundImage: `url(assets/img/nature.png)`,
+            backgroundRepeat: "no-repeat",
+            backgroundPositionX: "center",
+            backgroundPositionY: "center",
+            backgroundSize: "250px",
+            backgroundAttachment: "fixed",
+            paddingBottom: "30px",
+            minHeight: "650px",
+          }}
+        >
+          <Row className="d-flex align-items-center">
+            <Col md={5} style={{ marginTop: "80px" }}>
+              <div className="presale-box my-5 ">
+                <div className="mg-left-auto">
+                  <div className="wisdom2">
+                    <h3>
+                      Powered by <span className="tommorow">1.3 Million</span>{" "}
+                      wise-ards.
+                    </h3>
+                  </div>
+                  <div className="wisdom2">
+                    <h3>
+                      <span className="tommorow">SWIM</span>-Spread Wisdom
+                    </h3>
+                    <h6>
+                      Unlock the power of wisdom for a healthier Earth and
+                      humanity with 'WISE ME,' the revolutionary NFT
+                      Play-To-Earn game for toddlers and parents that combines
+                      Gaming-Earning-Learning. #spreadwisdom.
+                    </h6>
+                    <div className="hero-button">
+                      <Button className="btn btn-primary">
+                        <a
+                          target="_blank"
+                          href="assets/whitepaper/SWIM_Whitepaper.pdf"
+                        >
+                          WHITEPAPER
+                        </a>
+                      </Button>
+                      <Button className="btn btn-primary ms-3">
+                        <a
+                          target="_blank"
+                          href="assets/audit/swim-audit-report.pdf"
+                        >
+                          SWIM AUDIT
+                        </a>
+                      </Button>
                     </div>
                   </div>
                 </div>
-              </Col>
-              <Col md={2}></Col>
-              <Col md={5}>
-                <div className="presale-box my-5 ">
-                  <div className="mg-right-auto">
-                    <div className="wisdom2">
-                      <h3>
-                        Buy Now Before The{" "}
-                        <span className="tommorow">2x Price</span> Rise
-                      </h3>
-                      <p>
-                        <img
-                          alt="ETH"
-                          style={{ maxHeight: "25px" }}
-                          src="images/icons/usdt.png"
-                        />{" "}
-                        1 USDT = 37 SWIM
-                      </p>
-                      <div className="timer">
-                        <CountdownTimer targetDate={dateTimeAfterThreeDays} />
-                      </div>
-                      <div className={`loader-bar ${classes.loaderBar}`}>
+              </div>
+            </Col>
+            <Col md={2}></Col>
+            <Col md={5}>
+              <div className="presale-box my-5 ">
+                <div className="mg-right-auto">
+                  <div className="wisdom2">
+                    <h3>
+                      Buy Now Before The{" "}
+                      <span className="tommorow">2x Price</span> Rise
+                    </h3>
+                    <p>
+                      <img
+                        alt="ETH"
+                        style={{ maxHeight: "25px" }}
+                        src="images/icons/usdt.png"
+                      />{" "}
+                      1 USDT = 37 SWIM
+                    </p>
+                    <div className="timer">
+                      <CountdownTimer targetDate={dateTimeAfterThreeDays} />
+                    </div>
+                    <div className={`loader-bar ${classes.loaderBar}`}>
                       <div className={`value ${classes.value}`}>
                           <h5 className={classes.amountHeader}><strong>Amount Raised:</strong> $70,000
                              </h5>
-                        </div>
                       </div>
+                    </div>
 
-                      {isConnected ? (
-                        <>
-                        <div className="wallet mt-3">     
+                    {isConnected ? (
+                      <>
+                        <div className="wallet mt-3">
                           <Button
-                            className="w-100 btn btn-primary"
-                            onClick={() => setModalShow(true) }
+                            className="w-50 mb-3 d-block m-auto btn btn-primary py-2 outline-none buyButton"
+                            onClick={() => setModalShow(true)}
+                            style={{
+                              border: "1px solid white",
+                              background: "transparent",
+                              fontWeight: "500",
+                              fontSize: "1.2rem",
+                            }}
                           >
                             Buy
                           </Button>
@@ -368,28 +370,33 @@ const Home = () => {
                           <Web3Button />
                         </div>
                       </>
-                      ) : (
-                        <div className={classes.web3button}>
+                    ) : (
+                      <div className={classes.web3button}>
                         <Web3Button />
-                        </div>
-                      )}
-                      
-                      {
-                        <DialogBox dialogBoxOpen={dialogBoxOpen} cancelButton={cancelButton}/>
-                      }
-                      <p className="text-center">
-                        Listing begins SOON on more then 4+ Exchanges.
-                      </p>
-                      <button className="btn-success" onClick={getVestingId}>Get Vesting ID</button>
-                      <p className="text-center">
-                        Watch this space for claiming.
-                      </p>
-                    </div>
+                      </div>
+                    )}
+
+                    {
+                      <DialogBox
+                        dialogBoxOpen={dialogBoxOpen}
+                        cancelButton={cancelButton}
+                      />
+                    }
+                    <p className="text-center">
+                      Listing begins SOON on more then 4+ Exchanges.
+                    </p>
+                    <button className="btn-success" onClick={getVestingId}>
+                      Get Vesting ID
+                    </button>
+                    <p className="text-center">
+                      Watch this space for claiming.
+                    </p>
                   </div>
                 </div>
-              </Col>
-            </Row>
-          </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
       </section>
 
       <Footer />
@@ -397,6 +404,3 @@ const Home = () => {
   );
 };
 export default Home;
-
-
-
