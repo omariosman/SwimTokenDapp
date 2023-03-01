@@ -228,9 +228,11 @@ const Home = () => {
       let ownerVestings = await contract.methods.getOwnerVestings(userAddress).call();
       //console.log(`Owner vestings: ${ownerVestings}`);
       toast.success(`Your vesting id: ${ownerVestings}`, {
+        duration: 10000,
         style: {
           padding: "12px",
-          minWidth: "35rem"
+          minWidth: "35rem",
+          
         },
       });
       //let encoded_tx = tx_builder.encodeABI();
