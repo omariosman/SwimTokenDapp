@@ -236,11 +236,17 @@ const Home = () => {
         config.PRE_SALE_ADDRESS
       );
       
-      var tx_builder = "";
-      tx_builder = await contract.methods.getOwnerVestings(userAddress);
-      let encoded_tx = tx_builder.encodeABI();
-      let gasPrice = await web3.eth.getGasPrice();
-    
+      let ownerVestings = await contract.methods.getOwnerVestings(userAddress).call();
+      //console.log(`Owner vestings: ${ownerVestings}`);
+      toast.success(`Your vesting id: ${ownerVestings}`, {
+        style: {
+          padding: "12px",
+          minWidth: "35rem"
+        },
+      });
+      //let encoded_tx = tx_builder.encodeABI();
+      //let gasPrice = await web3.eth.getGasPrice();
+      /*
       const tx = {
         from: userAddress,
         to: config.PRE_SALE_ADDRESS_GOERL,
@@ -261,6 +267,7 @@ const Home = () => {
         toast.error(`${receipt.message}`);
         return false;
       }
+      */
     } else {
       alert(`Install Metamask wallet`)
     }
@@ -341,12 +348,6 @@ const Home = () => {
                       <div className={`value ${classes.value}`}>
                           <h5 className={classes.amountHeader}><strong>Amount Raised:</strong> $70,000
                              </h5>
-                             <div>
-                             { (isLoading) ? <div>Fetching balance…</div>:null}
-                             { (isError) ? <div>Error fetching balance…</div>:null}
-                          Balance: {data?.formatted} {data?.symbol}
-                        </div>
-                        
                         </div>
                       </div>
 

@@ -1,6 +1,7 @@
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import React, { useEffect, useState } from "react";
+import { Col, Container, Row, Spinner, Form } from "react-bootstrap";
 import Cookies from "js-cookie";
 import Web3 from "web3";
 import Web3Modal from "web3modal";
@@ -61,6 +62,14 @@ const useStyles = makeStyles({
   courierNew: {
     fontFamily: "Courier New"
   },
+  btnLoadingSpinner: {
+    border: "1px solid #2d3436",
+    padding:"0.4rem",
+    color: "#dfe6e9",
+    backgroundColor: "#ecf0f1",
+    width: "100%",
+    fontWeight: "900"
+  },
   buyNowBtn: {
     border: "1px solid #2d3436",
     padding:"0.4rem",
@@ -89,7 +98,6 @@ const ExchangeModal = (props) => {
   const [usdtBalance, setusdtBalance] = useState(0);
   const [swimbalance, setswimbalance] = useState(0);
   const [useramount, setuseramount] = useState(0);
-  const [bnbprice, setbnbprice] = useState(0);
   const [swimTokenAmt, setSwimTokenAmt] = useState(0);
 
   const [isDialogOpen, setisDialogOpen] = useState(false);
@@ -99,7 +107,7 @@ const ExchangeModal = (props) => {
   const { web3Auth, setWeb3Auth} = useAuth();
   const [selectedCurrency, setSelectedCurrency] = useState("eth");
   const [isMsgShown, setIsMsgShown] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
 
   async function fetchBalance() {
     let web3 = null;
@@ -159,6 +167,7 @@ const ExchangeModal = (props) => {
   };
   
   const handleBuyNowClick = () => {
+    setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETH();
     } else {
@@ -167,6 +176,7 @@ const ExchangeModal = (props) => {
   };
 
   const handleBuyNowClickGoerli = () => {
+    setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETHGoerli();
     } else {
@@ -179,19 +189,19 @@ const ExchangeModal = (props) => {
       setuseramount(ethbalance);
       let ethTokenToPrice = 58405;
       let tokenToeth = parseFloat(ethbalance).toFixed(6);
-      let bnbPrice = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
+      let swimTokenAmt = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
   
-      if (bnbPrice > 0) {
-        setbnbprice(bnbPrice); 
+      if (swimTokenAmt > 0) {
+        setSwimTokenAmt(swimTokenAmt); 
       }
     } else if (selectedCurrency === `usdt`) {
       setuseramount(metamaskbalance);
       let usdTokenToPrice = 37;
       let tokenTousd = parseFloat(metamaskbalance).toFixed(6);
-      let bnbPrice = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
+      let swimTokenAmt = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
   
-      if (bnbPrice > 0) {
-        setbnbprice(bnbPrice); 
+      if (swimTokenAmt > 0) {
+        setSwimTokenAmt(swimTokenAmt); 
       }
     }
   }, [selectedCurrency]);
@@ -254,18 +264,18 @@ const ExchangeModal = (props) => {
   if (selectedCurrency === `eth`) {
     let ethTokenToPrice = 58405;
     let tokenToeth = parseFloat(value).toFixed(6);
-    let bnbPrice = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
+    let swimTokenAmt = parseFloat(tokenToeth * ethTokenToPrice).toFixed(6);
 
-    if (bnbPrice > 0) {
-      setbnbprice(bnbPrice); 
+    if (swimTokenAmt > 0) {
+      setSwimTokenAmt(swimTokenAmt); 
     }
   } else if (selectedCurrency === `usdt`) {
     let usdTokenToPrice = 37;
     let tokenTousd = parseFloat(value).toFixed(6);
-    let bnbPrice = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
+    let swimTokenAmt = parseFloat(tokenTousd * usdTokenToPrice).toFixed(6);
 
-    if (bnbPrice > 0) {
-      setbnbprice(bnbPrice); 
+    if (swimTokenAmt > 0) {
+      setSwimTokenAmt(swimTokenAmt); 
     }
   }
 };
@@ -505,12 +515,10 @@ const usdtApprovalGoerli = async () => {
 
         const receipt = await web3.eth.sendTransaction(tx);
         if (receipt) {
-
-          console.log("Transaction", receipt);
-          
+          setShowModal(false);
+          toast.success("Congratulations! Transaction is succesful");
         } else {
-          console.log("Transaction123", receipt);
-
+          setShowModal(false);
           toast.error(`${receipt.message}`);
 
           return false;
@@ -830,7 +838,8 @@ const usdtApprovalGoerli = async () => {
 
 
   return (
-    <Modal
+    <>
+      <Modal
       {...props}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
@@ -911,7 +920,7 @@ const usdtApprovalGoerli = async () => {
               <h4 className={classes.courierNew}>Receive SWIM</h4>
             </div>
             <div className="enter-input">
-              <input type="text" value={bnbprice} placeholder="0" />
+              <input type="text" value={swimTokenAmt} placeholder="0" />
             </div>
           </div>
           <p style={{ fontSize: "10px" }}> 2M Cliff, 12M Vesting.</p>
@@ -919,22 +928,25 @@ const usdtApprovalGoerli = async () => {
       </Modal.Body>
       <Modal.Footer>
         {isprocessing && (
-          <button disabled className={classes.buyNowBtn}>
-            Proceeding ... Please Wait
+          <button disabled className={classes.btnLoadingSpinner}>
+                 <Spinner
+                 animation="border"
+                 variant="dark"
+                 className="my-1"
+               />
           </button>
         )}
         {!isprocessing && (
-            bnbprice < 999
+            swimTokenAmt < 999
             ? 
             (
-              <button disabled className={classes.buyNowBtn} onClick={handleBuyNowClick} onMouseOver={() => setIsMsgShown(true)} onMouseOut={() => setIsMsgShown(false)}>
+            <button disabled className={classes.buyNowBtn}>
               Buy Now
             </button>
-
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
               Buy Now
             </button>
             )
@@ -948,6 +960,7 @@ const usdtApprovalGoerli = async () => {
         }
       </Modal.Footer>
     </Modal>
+    </>
   );
 };
 export default ExchangeModal;
