@@ -289,6 +289,7 @@ const ExchangeModal = (props) => {
       setSwimTokenAmt(swimTokenAmt); 
     }
   };
+}
 
   const usdtApprovalGoerli = async () => {
     let web3 = null;
@@ -986,7 +987,7 @@ const ExchangeModal = (props) => {
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
               Buy Now
             </button>
           ))}
