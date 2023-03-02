@@ -153,7 +153,11 @@ const Home = () => {
     }
   };
 
+<<<<<<< HEAD
   const THREE_DAYS_IN_MS = 18 * 24 * 60 * 60 * 1000;
+=======
+  const THREE_DAYS_IN_MS = 19 * 24 * 60 * 60 * 1000;
+>>>>>>> 6db9933d9c3ff1ed8e5a7638bbc63bf8c078de51
   const NOW_IN_MS = new Date().getTime();
   const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
 
