@@ -4,6 +4,7 @@ import { Container, Row, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import WalletModal from "./WalletModal";
 import Header from "./Header";
+import NewHeader from "./NewHeader";
 import Piechart from "./chart";
 import ExchangeModal from "./ExchangeModal";
 import config from "../config/config";
@@ -152,7 +153,7 @@ const Home = () => {
     }
   };
 
-  const THREE_DAYS_IN_MS = 27 * 24 * 60 * 60 * 1000;
+  const THREE_DAYS_IN_MS = 18 * 24 * 60 * 60 * 1000;
   const NOW_IN_MS = new Date().getTime();
   const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
 
@@ -385,7 +386,7 @@ const Home = () => {
                       />
                     }
                     <p className="text-center">
-                      Listing begins SOON on more then 4+ Exchanges.
+                      Listing begins SOON on more than 4+ Exchanges.
                     </p>
                     <button className="btn-success" onClick={getVestingId}>
                       Get Vesting ID

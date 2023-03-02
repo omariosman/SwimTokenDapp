@@ -178,7 +178,7 @@ const ExchangeModal = (props) => {
   };
 
   const handleBuyNowClick = () => {
-    setShowModal(true);
+    //setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETH();
     } else {
@@ -187,7 +187,7 @@ const ExchangeModal = (props) => {
   };
 
   const handleBuyNowClickGoerli = () => {
-    setShowModal(true);
+    //setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETHGoerli();
     } else {
@@ -323,8 +323,8 @@ const ExchangeModal = (props) => {
     let newProvider = new Web3(provider);
   */
         const usdtContract = new web3.eth.Contract(
-          config.USDT_ABI,
-          config.USDT_ADDRESS
+          config.USDT_ABI_GOERLI,
+          config.USDT_ADDRESS_GOERLI
         );
         var supply_amount = parseFloat(useramount);
         if (isNaN(supply_amount)) {
@@ -332,34 +332,47 @@ const ExchangeModal = (props) => {
         }
 
         const amountToApprove = supply_amount * 10 ** 6;
-
-        const result = await usdtContract.methods
+        try {
+        /*
+          const result = await usdtContract.methods
           .approve(config.PRE_SALE_ADDRESS_GOERL, amountToApprove)
           .send({
             from: userAddress,
           });
+          */
+        } catch(error) {
+          alert("usdt transaction: ", error);
+        }
 
         const contract = new web3.eth.Contract(
           config.PRE_SALE_ABI_GOERLI,
           config.PRE_SALE_ADDRESS_GOERL
         );
+        let receipt = "";
+          try {
+            var tx_builder = "";
+            tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
+            let encoded_tx = tx_builder.encodeABI();
+            let gasPrice = await web3.eth.getGasPrice();
+    
+            const tx = {
+              from: userAddress,
+              to: config.PRE_SALE_ADDRESS_GOERL,
+              gasPrice: gasPrice,
+              data: encoded_tx,
+            };
+            //debugger;
+            const gas = await web3.eth.estimateGas(tx);
+            //debugger;
 
-        var tx_builder = "";
-        tx_builder = await contract.methods.buyTokensWithUSDT(amountToApprove);
-        let encoded_tx = tx_builder.encodeABI();
-        let gasPrice = await web3.eth.getGasPrice();
+            tx.gas = gas;
+           receipt = await web3.eth.sendTransaction(tx);
+           console.log(`ETH SEND DONE`);
+          } catch(error) {
+            console.log(`ETH SEND CATCH`);
+            alert(JSON.stringify(error, null, 4));
+          }
 
-        const tx = {
-          from: userAddress,
-          to: config.PRE_SALE_ADDRESS_GOERL,
-          gasPrice: gasPrice,
-          data: encoded_tx,
-        };
-
-        const gas = await web3.eth.estimateGas(tx);
-
-        tx.gas = gas;
-        const receipt = await web3.eth.sendTransaction(tx);
 
         if (receipt) {
           contract.events.newVesting().on("data", (event) => {
@@ -372,10 +385,13 @@ const ExchangeModal = (props) => {
           return false;
         }
         setisprocessing(false);
+        alert("success");
       } catch (error) {
         console.log(error);
         console.log(`Tx Failed`);
         setisprocessing(false);
+
+        alert("main catch: ", JSON.stringify(error, null, 4));
       }
     } else {
       alert(`Install Metamask wallet`);
@@ -475,6 +491,7 @@ const ExchangeModal = (props) => {
   };
 
   const handleSubmitTokenWithETHGoerli = async () => {
+    console.log(`handleSubmitTokenWithETHGoerli`);
     let web3 = null;
     if (window.ethereum !== undefined) {
       web3 = new Web3(Web3.givenProvider);
@@ -516,7 +533,8 @@ const ExchangeModal = (props) => {
         var tx_builder = "";
 
         supply_amount = web3.utils.toWei(supply_amount.toString(), "ether");
-
+        let receipt;
+        try{
         tx_builder = await contract.methods.buyTokensWithEth();
         let encoded_tx = tx_builder.encodeABI();
         let gasPrice = await web3.eth.getGasPrice();
@@ -527,15 +545,21 @@ const ExchangeModal = (props) => {
           data: encoded_tx,
           value: supply_amount,
         };
-        const gas = await web3.eth.estimateGas(tx);
-        tx.gas = gas;
+        //const gas = await web3.eth.estimateGas(tx);
+        tx.gas = 30000;
 
-        const receipt = await web3.eth.sendTransaction(tx);
+        const receipt = await web3.eth.sendTransaction(tx);     
+        console.log(`ETH SEND SUCCESS`);
+
+      }catch(error) {
+        console.log(`ETH SEND CATH`);
+        console.log(JSON.stringify(error, null, 4));
+      }
         if (receipt) {
-          setShowModal(false);
+          //setShowModal(false);
           toast.success("Congratulations! Transaction is succesful");
         } else {
-          setShowModal(false);
+          //setShowModal(false);
           toast.error(`${receipt.message}`);
 
           return false;
@@ -556,6 +580,8 @@ const ExchangeModal = (props) => {
   };
 
   const handleSubmitTokenWithETH = async () => {
+    console.log(`handleSubmitTokenWithETH`);
+
     let web3 = null;
     if (window.ethereum !== undefined) {
       web3 = new Web3(Web3.givenProvider);
@@ -978,7 +1004,7 @@ const ExchangeModal = (props) => {
           </button>
         )}
         {!isprocessing && (
-            swimTokenAmt < 999
+            swimTokenAmt < 1
             ? 
             (
             <button disabled className={classes.buyNowBtn}>
