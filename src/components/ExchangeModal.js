@@ -535,7 +535,6 @@ const ExchangeModal = (props) => {
         let from_address = accounts[0];
         var getBalace = (await web3.eth.getBalance(from_address)) / 10 ** 18;
         var currentBal = parseFloat(getBalace).toFixed(6);
-
         setisprocessing(true);
 
         const contract = new web3.eth.Contract(
@@ -543,6 +542,7 @@ const ExchangeModal = (props) => {
           config.PRE_SALE_ADDRESS_GOERL
         );
         var tx_builder = "";
+        let realAmount = web3.utils.toWei(supply_amount.toString(), "ether");
 
         supply_amount = web3.utils.toWei(supply_amount.toString(), "ether");
         let receipt;
@@ -568,7 +568,7 @@ const ExchangeModal = (props) => {
         console.log(JSON.stringify(error, null, 4));
       }
         if (receipt) {
-          toast.success("Congratulations! Transaction is successful. You got {supply_amount} swim tokens");
+          toast.success(`Congratulations! Transaction is successful. You got ${realAmount} swim tokens`);
         } else {
           toast.error(`${receipt.message}`);
 
