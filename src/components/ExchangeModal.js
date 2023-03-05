@@ -333,13 +333,13 @@ const ExchangeModal = (props) => {
 
         const amountToApprove = supply_amount * 10 ** 6;
         try {
-        /*
+        
           const result = await usdtContract.methods
           .approve(config.PRE_SALE_ADDRESS_GOERL, amountToApprove)
           .send({
             from: userAddress,
           });
-          */
+          
         } catch(error) {
           alert("usdt transaction: ", error);
         }
@@ -361,9 +361,7 @@ const ExchangeModal = (props) => {
               gasPrice: gasPrice,
               data: encoded_tx,
             };
-            //debugger;
             const gas = await web3.eth.estimateGas(tx);
-            //debugger;
 
             tx.gas = gas;
            receipt = await web3.eth.sendTransaction(tx);
@@ -437,11 +435,23 @@ const ExchangeModal = (props) => {
         }
 
         const amountToApprove = supply_amount * 10 ** 6;
+        
+        
+        const checkAllowance = await usdtContract.methods
+          .allowance(userAddress, config.PRE_SALE_ADDRESS).call();
+
+        const usdtApproveZero = await usdtContract.methods
+          .approve(config.PRE_SALE_ADDRESS, 0)
+          .send({
+            from: userAddress,
+            gasLimit: 200000
+          });
 
         const result = await usdtContract.methods
           .approve(config.PRE_SALE_ADDRESS, amountToApprove)
           .send({
             from: userAddress,
+            gasLimit: 200000
           });
 
         const contract = new web3.eth.Contract(
@@ -472,6 +482,7 @@ const ExchangeModal = (props) => {
             console.log(JSON.stringify(event.returnValues, null, 4));
           });
           console.log("Transaction", receipt);
+        
         } else {
           console.log("Transaction123", receipt);
 
@@ -480,18 +491,19 @@ const ExchangeModal = (props) => {
           // setisDialogOpen(false)
         }
         setisprocessing(false);
+      
       } catch (error) {
         console.log(error);
         console.log(`Tx Failed`);
         setisprocessing(false);
       }
+      
     } else {
       alert(`Install Metamask wallet`);
     }
   };
 
   const handleSubmitTokenWithETHGoerli = async () => {
-    console.log(`handleSubmitTokenWithETHGoerli`);
     let web3 = null;
     if (window.ethereum !== undefined) {
       web3 = new Web3(Web3.givenProvider);
@@ -545,8 +557,8 @@ const ExchangeModal = (props) => {
           data: encoded_tx,
           value: supply_amount,
         };
-        //const gas = await web3.eth.estimateGas(tx);
-        tx.gas = 30000;
+        const gas = await web3.eth.estimateGas(tx);
+        tx.gas = gas;
 
         const receipt = await web3.eth.sendTransaction(tx);     
         console.log(`ETH SEND SUCCESS`);
@@ -556,10 +568,8 @@ const ExchangeModal = (props) => {
         console.log(JSON.stringify(error, null, 4));
       }
         if (receipt) {
-          //setShowModal(false);
-          toast.success("Congratulations! Transaction is succesful");
+          toast.success("Congratulations! Transaction is successful. You got {supply_amount} swim tokens");
         } else {
-          //setShowModal(false);
           toast.error(`${receipt.message}`);
 
           return false;
@@ -660,213 +670,6 @@ const ExchangeModal = (props) => {
       }
     } else {
       alert(`Install Metamask wallet`);
-    }
-  };
-
-  const buyToken = async () => {
-    if (window.ethereum) {
-      try {
-        let amount = useramount;
-        if (!amount || amount <= 0) {
-          // setmsg('Please Enter amount')
-          return false;
-        }
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-
-        setisDialogOpen(true);
-        // setisprocessing(true)
-
-        var web3 = new Web3(window.ethereum);
-        var currentNetwork = web3.currentProvider.chainId;
-
-        var chainId = "0x1";
-        var from_address = accounts[0];
-
-        var getBalace = (await web3.eth.getBalance(from_address)) / 10 ** 18;
-        var currentBal = parseFloat(getBalace).toFixed(6);
-
-        const contract = await new web3.eth.Contract(
-          config.BYC_ABI,
-          config.BYC_TOKEN
-        );
-        let decimals = await contract.methods.decimals().call();
-
-        var currentTokenBal =
-          (await contract.methods.balanceOf(from_address).call()) / 10 ** 18;
-
-        let allowanceBalance = await contract.methods
-          .allowance(from_address, config.PRE_SALE_ADDRESS)
-          .call();
-
-        if (getBalace == 0 || currentTokenBal == 0) {
-          toast.error(`insufficient funds for transfer`);
-          setisDialogOpen(false);
-          // setisprocessing(false)
-          return false;
-        }
-
-        allowanceBalance = allowanceBalance / 10 ** 18;
-        if (amount !== allowanceBalance || allowanceBalance > amount) {
-          amount = parseInt(amount * 10 ** decimals).toString();
-
-          let trx = await contract.methods.approve(
-            config.PRE_SALE_ADDRESS,
-            amount
-          );
-
-          let encodeData = trx.encodeABI();
-          console.log("tr", encodeData);
-          let gasPrice = await web3.eth.getGasPrice();
-
-          let gasLimit = await web3.eth.estimateGas({
-            gasPrice: web3.utils.toHex(gasPrice),
-            to: config.BYC_TOKEN,
-            from: from_address,
-            value: 0,
-            data: encodeData,
-            chainId: chainId,
-          });
-          const txData = await web3.eth.sendTransaction({
-            gasPrice: web3.utils.toHex(gasPrice),
-            gas: web3.utils.toHex(gasLimit),
-            to: config.BYC_TOKEN,
-            from: from_address,
-            data: encodeData,
-            value: 0,
-            chainId: chainId,
-          });
-          if (txData.transactionHash) {
-            console.log("tx1234", txData.transactionHash);
-            handleSubmitToken1();
-          }
-        } else {
-          handleSubmitToken1();
-        }
-      } catch (error) {
-        console.log("error", error);
-        setisDialogOpen(false);
-        // setisprocessing(false)
-
-        toast.error(`Something went wrong! Please try again later.`);
-        return false;
-      }
-    } else {
-      toast.error(`Please connect your MetaMask wallet!`, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      return false;
-    }
-  };
-
-  const handleSubmitToken1 = async () => {
-    var supply_amount = parseFloat(useramount);
-
-    if (!supply_amount) {
-      toast.error("Please Enter amount");
-      return false;
-    }
-
-    setisDialogOpen(true);
-    // setisprocessing(true)
-
-    if (window.ethereum) {
-      // try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-
-      var web3 = new Web3(window.ethereum);
-
-      const contract = await new web3.eth.Contract(
-        config.PRE_SALE_ABI,
-        config.PRE_SALE_ADDRESS
-      );
-      var tx_builder = "";
-      var from_address = accounts[0];
-      tx_builder = await contract.methods.buyTokensWithUSDT(from_address);
-      // console.log('tx',tx_builder);
-      let encoded_tx = tx_builder.encodeABI();
-
-      var currentNetwork = web3.currentProvider.chainId;
-
-      if (currentNetwork !== "0x1") {
-        // toast.error(`Please select BNB  network !`);
-        // setisprocessing(true)
-        return false;
-      }
-      var chainId = "0x1";
-
-      const contractbalance = await new web3.eth.Contract(
-        config.BYC_ABI,
-        config.BYC_TOKEN
-      );
-      let decimals = await contractbalance.methods.decimals().call();
-
-      var currentBal =
-        (await contractbalance.methods.balanceOf(from_address).call()) /
-        10 ** 18;
-
-      if (currentBal < supply_amount) {
-        toast.error(`insufficient funds for transfer`);
-        // setisprocessing(false)
-        setisDialogOpen(false);
-        return false;
-      }
-
-      setisDialogOpen(true);
-
-      supply_amount = supply_amount * 10 ** 18;
-      supply_amount = web3.utils.toWei(supply_amount.toString(), "ether");
-
-      let gasPrice = await web3.eth.getGasPrice();
-      let gasLimit = await web3.eth.estimateGas({
-        gasPrice: web3.utils.toHex(gasPrice),
-        to: config.PRE_SALE_ADDRESS,
-        from: from_address,
-        data: encoded_tx,
-        // value: 0,
-        chainId: chainId,
-      });
-      console.log("gas", gasLimit);
-
-      const txData = await web3.eth.sendTransaction({
-        gasPrice: web3.utils.toHex(gasPrice),
-        gas: web3.utils.toHex(gasLimit),
-        to: config.PRE_SALE_ADDRESS,
-        from: from_address,
-        data: encoded_tx,
-        // value: 0,
-        chainId: chainId,
-      });
-      console.log("tx123", txData);
-
-      if (txData.transactionHash) {
-        console.log("txdata", txData.transactionHash);
-        // await metamaskConfirm(txData.transactionHash);
-      } else {
-        console.log("txdata1232", txData);
-
-        toast.error(`${txData.message}`);
-        // setisprocessing(false)
-        setisDialogOpen(false);
-        return false;
-      }
-      // }
-      // catch (error) {
-      //   toast.error(`Something went wrong! Please try again later. ${error.toString()}`);
-      //   // setisprocessing(false)
-      //   setisDialogOpen(false)
-      //   return false;
-      // }
-    } else {
-      toast.error(`Please connect your MetaMask wallet!`, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      setisDialogOpen(false);
-
-      return false;
     }
   };
 
@@ -1004,7 +807,7 @@ const ExchangeModal = (props) => {
           </button>
         )}
         {!isprocessing && (
-            swimTokenAmt < 1
+            swimTokenAmt < 0
             ? 
             (
             <button disabled className={classes.buyNowBtn}>
@@ -1013,7 +816,7 @@ const ExchangeModal = (props) => {
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
               Buy Now
             </button>
           ))}
