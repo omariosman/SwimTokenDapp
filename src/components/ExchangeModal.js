@@ -11,12 +11,14 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import toast, { Toaster } from "react-hot-toast";
 import config from "../config/config";
 import { Dialog, Classes } from "@blueprintjs/core";
+import DialogBox from "./DialogBox";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import { provider } from "./helper";
 import { useAuth } from "../contexts/AuthContext2";
 import { fa1 } from "@fortawesome/free-solid-svg-icons";
 import { makeStyles } from "@material-ui/core/styles";
 import "./buyForm.css";
+
 const flatted = require("flatted");
 
 const useStyles = makeStyles({
@@ -108,7 +110,6 @@ const ExchangeModal = (props) => {
   const [useramount, setuseramount] = useState(0);
   const [swimTokenAmt, setSwimTokenAmt] = useState(0);
 
-  const [isDialogOpen, setisDialogOpen] = useState(false);
   const [getWeb3, setGetWeb3] = useState({});
   const [modalShow, setModalShow] = React.useState(false);
   const [isprocessing, setisprocessing] = useState(false);
@@ -116,6 +117,10 @@ const ExchangeModal = (props) => {
   const [selectedCurrency, setSelectedCurrency] = useState("eth");
   const [isMsgShown, setIsMsgShown] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [dialogBoxOpen, setDialogBoxOpen] = useState(false);
+
+  const [dialogBoxText, setDialogBoxText] = useState("");
+
 
   async function fetchBalance() {
     let web3 = null;
@@ -128,7 +133,7 @@ const ExchangeModal = (props) => {
       });
       //Enable session (triggers QR Code modal)
       await provider.enable();
-      //  Create Web3
+      //Create Web3
       web3 = new Web3(provider);
     }
     if (web3 != null) {
@@ -178,7 +183,6 @@ const ExchangeModal = (props) => {
   };
 
   const handleBuyNowClick = () => {
-    //setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETH();
     } else {
@@ -187,7 +191,6 @@ const ExchangeModal = (props) => {
   };
 
   const handleBuyNowClickGoerli = () => {
-    //setShowModal(true);
     if (selectedCurrency === "eth") {
       handleSubmitTokenWithETHGoerli();
     } else {
@@ -224,12 +227,6 @@ const ExchangeModal = (props) => {
 
   const getMetamaskBalance = async (web3) => {
     var currentNetwork = await web3.eth.getChainId();
-    /*
-    if (currentNetwork != "1") {
-      toast.error("Please Select ETH mainnet!!");
-      return;
-    }
-*/
     const accounts = await web3.eth.getAccounts();
     var from_address = accounts[0];
 
@@ -301,10 +298,10 @@ const ExchangeModal = (props) => {
         qrcode: false,
       });
 
-      //  Enable session (triggers QR Code modal)
+      //Enable session (triggers QR Code modal)
       await provider.enable();
 
-      //  Create Web3
+      //Create Web3
       web3 = new Web3(provider);
     }
     if (web3 != null) {
@@ -316,19 +313,17 @@ const ExchangeModal = (props) => {
         var accounts = await web3.eth.getAccounts();
 
         const userAddress = accounts[0];
-        /*
-    if (!provider.connected) {
-      provider.enable();
-    }
-    let newProvider = new Web3(provider);
-  */
+        
         const usdtContract = new web3.eth.Contract(
           config.USDT_ABI_GOERLI,
           config.USDT_ADDRESS_GOERLI
         );
         var supply_amount = parseFloat(useramount);
         if (isNaN(supply_amount)) {
-          alert("Invalid Amount value");
+          let errorText = `Please enter valid amount`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
+          return false;
         }
 
         const amountToApprove = supply_amount * 10 ** 6;
@@ -341,7 +336,9 @@ const ExchangeModal = (props) => {
           });
           
         } catch(error) {
-          alert("usdt transaction: ", error);
+          let errorText = `${error}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
         }
 
         const contract = new web3.eth.Contract(
@@ -365,34 +362,35 @@ const ExchangeModal = (props) => {
 
             tx.gas = gas;
            receipt = await web3.eth.sendTransaction(tx);
-           console.log(`ETH SEND DONE`);
           } catch(error) {
-            console.log(`ETH SEND CATCH`);
-            alert(JSON.stringify(error, null, 4));
+            let errorText = `${error}`;
+            setDialogBoxText(errorText);
+            setDialogBoxOpen(true);
           }
 
 
         if (receipt) {
-          contract.events.newVesting().on("data", (event) => {
-            console.log(`Print event: ${event.returnValues}`);
-            console.log(JSON.stringify(event.returnValues, null, 4));
-            // Do something with the emitted event
-          });
+          let successText = `Transaction is successful. You got ${swimTokenAmt} Swim Tokens.`;
+          setDialogBoxText(successText);
+          setDialogBoxOpen(true);
         } else {
-          toast.error(`${receipt.message}`);
+          let errorText = `${receipt.message}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
+          //toast.error(`${receipt.message}`);
           return false;
         }
         setisprocessing(false);
-        alert("success");
       } catch (error) {
-        console.log(error);
-        console.log(`Tx Failed`);
         setisprocessing(false);
-
-        alert("main catch: ", JSON.stringify(error, null, 4));
+        let errorText = `${error}`;
+        setDialogBoxText(errorText);
+        setDialogBoxOpen(true);
       }
     } else {
-      alert(`Install Metamask wallet`);
+      let errorText = `Install Metamask wallet`;
+      setDialogBoxText(errorText);
+      setDialogBoxOpen(true);
     }
   };
 
@@ -431,7 +429,9 @@ const ExchangeModal = (props) => {
         );
         var supply_amount = parseFloat(useramount);
         if (isNaN(supply_amount)) {
-          alert("Invalid Amount value");
+          let errorText = `Please enter valid amount`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
         }
 
         const amountToApprove = supply_amount * 10 ** 6;
@@ -477,29 +477,25 @@ const ExchangeModal = (props) => {
         const receipt = await web3.eth.sendTransaction(tx);
 
         if (receipt) {
-          contract.events.newVesting().on("data", (event) => {
-            console.log(`Print event: ${event.returnValues}`);
-            console.log(JSON.stringify(event.returnValues, null, 4));
-          });
-          console.log("Transaction", receipt);
-        
+        let successText = `Transaction is successful. You got ${swimTokenAmt} Swim Tokens.`;
+        setDialogBoxText(successText);
+        setDialogBoxOpen(true);
         } else {
-          console.log("Transaction123", receipt);
-
-          toast.error(`${receipt.message}`);
-          // setisprocessing(false)
-          // setisDialogOpen(false)
+          let errorText = `${receipt.message}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
         }
         setisprocessing(false);
-      
       } catch (error) {
-        console.log(error);
-        console.log(`Tx Failed`);
         setisprocessing(false);
+        let errorText = `${error}`;
+        setDialogBoxText(errorText);
+        setDialogBoxOpen(true);
       }
-      
     } else {
-      alert(`Install Metamask wallet`);
+      let errorText = `Install Metamask wallet`;
+      setDialogBoxText(errorText);
+      setDialogBoxOpen(true);
     }
   };
 
@@ -524,7 +520,9 @@ const ExchangeModal = (props) => {
       var supply_amount = parseFloat(useramount);
 
       if (!supply_amount) {
-        toast.error("Please Enter amount");
+        toast.error("Please Enter amount",{
+          position: 'top-right',
+        });
         return false;
       }
 
@@ -538,59 +536,63 @@ const ExchangeModal = (props) => {
         setisprocessing(true);
 
         const contract = new web3.eth.Contract(
-          config.PRE_SALE_ABI_GOERLI,
-          config.PRE_SALE_ADDRESS_GOERL
+        config.PRE_SALE_ABI_GOERLI,
+        config.PRE_SALE_ADDRESS_GOERL
         );
         var tx_builder = "";
-        let realAmount = web3.utils.toWei(supply_amount.toString(), "ether");
-
-        supply_amount = web3.utils.toWei(supply_amount.toString(), "ether");
+        
+        let supply_amount_wei = web3.utils.toWei(supply_amount.toString(), "ether");
         let receipt;
         try{
-        tx_builder = await contract.methods.buyTokensWithEth();
-        let encoded_tx = tx_builder.encodeABI();
-        let gasPrice = await web3.eth.getGasPrice();
-        const tx = {
-          from: from_address,
-          to: config.PRE_SALE_ADDRESS_GOERL,
-          gasPrice: gasPrice,
-          data: encoded_tx,
-          value: supply_amount,
-        };
-        const gas = await web3.eth.estimateGas(tx);
-        tx.gas = gas;
+          tx_builder = await contract.methods.buyTokensWithEth();
+          let encoded_tx = tx_builder.encodeABI();
+          let gasPrice = await web3.eth.getGasPrice();
+          const tx = {
+            from: from_address,
+            to: config.PRE_SALE_ADDRESS_GOERL,
+            gasPrice: gasPrice,
+            data: encoded_tx,
+            value: supply_amount_wei,
+          };
+          const gas = await web3.eth.estimateGas(tx);
+          tx.gas = gas;
 
-        const receipt = await web3.eth.sendTransaction(tx);     
-        console.log(`ETH SEND SUCCESS`);
-
-      }catch(error) {
-        console.log(`ETH SEND CATH`);
-        console.log(JSON.stringify(error, null, 4));
-      }
+          receipt = await web3.eth.sendTransaction(tx);     
+          setisprocessing(false);
+        } catch(error) {
+          setisprocessing(false);
+          let errorText = `${error}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
+        }
         if (receipt) {
-          toast.success(`Congratulations! Transaction is successful. You got ${realAmount} swim tokens`);
+          let successText = `Transaction is successful. You got ${swimTokenAmt} Swim Tokens.`;
+          setDialogBoxText(successText);
+          setDialogBoxOpen(true);
         } else {
-          toast.error(`${receipt.message}`);
-
+          let errorText = `${receipt.message}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
           return false;
         }
         setisprocessing(false);
-      } catch (error) {
-        console.log("err", error);
-        console.log(JSON.stringify(error, null, 4));
-        toast.error(
-          `Something went wrong! Please try again later. ${error.toString()}`
-        );
+      } 
+      catch (error) {
         setisprocessing(false);
+        let errorText = `${error}`;
+        setDialogBoxText(errorText);
+        setDialogBoxOpen(true);
         return false;
       }
     } else {
-      alert(`Install Metamask wallet`);
+      //alert(`Install Metamask wallet`);
+      let errorText = `Install Metamask wallet`;
+      setDialogBoxText(errorText);
+      setDialogBoxOpen(true);
     }
   };
 
   const handleSubmitTokenWithETH = async () => {
-    console.log(`handleSubmitTokenWithETH`);
 
     let web3 = null;
     if (window.ethereum !== undefined) {
@@ -609,7 +611,6 @@ const ExchangeModal = (props) => {
     }
     if (web3 != null) {
       var supply_amount = parseFloat(useramount);
-
       if (!supply_amount) {
         toast.error("Please Enter amount");
         return false;
@@ -637,7 +638,7 @@ const ExchangeModal = (props) => {
         );
         var tx_builder = "";
 
-        supply_amount = web3.utils.toWei(supply_amount.toString(), "ether");
+        let supply_amount_wei = web3.utils.toWei(supply_amount.toString(), "ether");
 
         tx_builder = await contract.methods.buyTokensWithEth();
         let encoded_tx = tx_builder.encodeABI();
@@ -647,29 +648,35 @@ const ExchangeModal = (props) => {
           to: config.PRE_SALE_ADDRESS,
           gasPrice: gasPrice,
           data: encoded_tx,
-          value: supply_amount,
+          value: supply_amount_wei,
         };
         const gas = await web3.eth.estimateGas(tx);
         tx.gas = gas;
 
         const receipt = await web3.eth.sendTransaction(tx);
         if (receipt) {
+          let successText = `Transaction is successful. You got ${swimTokenAmt} Swim Tokens.`;
+          setDialogBoxText(successText);
+          setDialogBoxOpen(true);
         } else {
-          toast.error(`${receipt.message}`);
-
+          let errorText = `${receipt.message}`;
+          setDialogBoxText(errorText);
+          setDialogBoxOpen(true);
+          //toast.error(`${receipt.message}`);
           return false;
         }
         setisprocessing(false);
       } catch (error) {
-        console.log("err", error);
-        console.log(JSON.stringify(error, null, 4));
-        toast.error(
-          `Something went wrong! Please try again later. ${error.toString()}`
-        );
         setisprocessing(false);
+        let errorText = `${error}`;
+        setDialogBoxText(errorText);
+        setDialogBoxOpen(true);
       }
     } else {
-      alert(`Install Metamask wallet`);
+      //alert(`Install Metamask wallet`);
+      let errorText = `Install Metamask wallet`;
+      setDialogBoxText(errorText);
+      setDialogBoxOpen(true);
     }
   };
 
@@ -679,8 +686,19 @@ const ExchangeModal = (props) => {
     }
   };
 
+  const closeDialogBox = () => {
+    setDialogBoxOpen(false);
+  }
+
   return (
     <>
+    <DialogBox
+     dialogBoxOpen={dialogBoxOpen}
+     closeDialogBox={closeDialogBox}
+     dialogBoxText={dialogBoxText}
+    >
+
+    </DialogBox>
       <Modal
       {...props}
       size="lg"

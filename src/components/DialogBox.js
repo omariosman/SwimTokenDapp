@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import MetaMaskConnector from "./Wallet/MetaMaskConnector";
-import { Web3Button } from "@web3modal/react";
+import Button from '@material-ui/core/Button';
+import toast, { Toaster } from "react-hot-toast";
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,23 +30,26 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
   
+
+
+
 function DialogBox(props) {
 
     const classes = useStyles();
   
-    const cancelButton = () => {
-      props.cancelButton();
-    };
-  
-    //open dialog with authcontext flag
+    const closeDialogBox = () => {
+      props.closeDialogBox();
+    }
+
     return (
       <Dialog
         open={props.dialogBoxOpen}
         classes={{ paper: classes.dialogPaper }}
       >
-        <MetaMaskConnector />
-        <Web3Button />
-
+        {props.dialogBoxText}
+        <Button onClick={closeDialogBox} color="primary">
+              Close
+        </Button>
       </Dialog>
     );
   }
