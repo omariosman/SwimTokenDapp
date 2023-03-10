@@ -153,10 +153,8 @@ const Home = () => {
     }
   };
 
-  const THREE_DAYS_IN_MS = 18 * 24 * 60 * 60 * 1000;
-
-  const NOW_IN_MS = new Date().getTime();
-  const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
+  const THREE_DAYS_IN_MS = 'March, 12, 2023';
+  const dateTimeAfterThreeDays = Date.parse(THREE_DAYS_IN_MS);
 
   const ExpiredNotice = () => {
     return (
