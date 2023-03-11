@@ -825,7 +825,7 @@ const ExchangeModal = (props) => {
           </button>
         )}
         {!isprocessing && (
-            swimTokenAmt < 0
+            swimTokenAmt < 999
             ? 
             (
             <button disabled className={classes.buyNowBtn}>
@@ -834,7 +834,7 @@ const ExchangeModal = (props) => {
             )
             :
             (
-              <button className={classes.buyNowBtn} onClick={handleBuyNowClickGoerli}>
+              <button className={classes.buyNowBtn} onClick={handleBuyNowClick}>
               Buy Now
             </button>
           ))}
